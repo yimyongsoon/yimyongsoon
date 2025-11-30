@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>크리스마스 트리</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(to bottom, #0a1929, #1a365d);
+            overflow: hidden;
+        }
+
+        .container {
+            position: relative;
+        }
+
+        /* 트리 */
+        .tree {
+            position: relative;
+            width: 0;
+            height: 0;
+        }
+
+        .tree-layer {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            border-left: 80px solid transparent;
+            border-right: 80px solid transparent;
+            border-bottom: 120px solid #2d5016;
+            animation: sway 3s ease-in-out infinite;
+        }
+
+        .tree-layer:nth-child(1) {
+            top: -300px;
+            border-left-width: 60px;
+            border-right-width: 60px;
+            border-bottom-width: 100px;
+            border-bottom-color: #3a6b1f;
+        }
+
+        .tree-layer:nth-child(2) {
+            top: -230px;
+            border-left-width: 80px;
+            border-right-width: 80px;
+            border-bottom-width: 120px;
+            border-bottom-color: #2d5016;
+        }
+
+        .tree-layer:nth-child(3) {
+            top: -140px;
+            border-left-width: 100px;
+            border-right-width: 100px;
+            border-bottom-width: 140px;
+            border-bottom-color: #1f3d0f;
+        }
+
+        @keyframes sway {
+            0%, 100% {
+                transform: translateX(-50%) rotate(0deg);
+            }
+            50% {
+                transform: translateX(-50%) rotate(2deg);
+            }
+        }
+
+        /* 트리 기둥 */
+        .trunk {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            top: 0;
+            width: 40px;
+            height: 60px;
+            background: #4a2511;
+            border-radius: 5px;
+        }
+
+        /* 꼭대기 별 */
+        .star {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            top: -340px;
+            width: 0;
+            height: 0;
+            border-left: 20px solid transparent;
+            border-right: 20px solid transparent;
+            border-bottom: 30px solid #ffd700;
+            animation: sparkle 1.5s ease-in-out infinite;
+        }
+
+        .star:after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 0;
+            border-left: 20px solid transparent;
+            border-right: 20px solid transparent;
+            border-top: 30px solid #ffd700;
+            top: 5px;
+            left: -20px;
+        }
+
+        @keyframes sparkle {
+            0%, 100% {
+                opacity: 1;
+                transform: translateX(-50%) scale(1);
+                filter: brightness(1);
+            }
+            50% {
+                opacity: 0.6;
+                transform: translateX(-50%) scale(1.2);
+                filter: brightness(1.5);
+            }
+        }
+
+        /* 장식 구슬들 */
+        .ornament {
+            position: absolute;
+            border-radius: 50%;
+            animation: glow 2s ease-in-out infinite;
+        }
+
+        .ornament:nth-child(1) {
+            width: 15px;
+            height: 15px;
+            background: #ff3b3b;
+            top: -280px;
+            left: -30px;
+            animation-delay: 0s;
+        }
+
+        .ornament:nth-child(2) {
+            width: 12px;
+            height: 12px;
+            background: #ffd700;
+            top: -260px;
+            left: 20px;
+            animation-delay: 0.5s;
+        }
+
+        .ornament:nth-child(3) {
+            width: 18px;
+            height: 18px;
+            background: #4169e1;
+            top: -220px;
+            left: -50px;
+            animation-delay: 1s;
+        }
+
+        .ornament:nth-child(4) {
+            width: 14px;
+            height: 14px;
+            background: #ff3b3b;
+            top: -200px;
+            left: 40px;
+            animation-delay: 1.5s;
+        }
+
+        .ornament:nth-child(5) {
+            width: 16px;
+            height: 16px;
+            background: #ffd700;
+            top: -170px;
+            left: -70px;
+            animation-delay: 0.3s;
+        }
+
+        .ornament:nth-child(6) {
+            width: 13px;
+            height: 13px;
+            background: #4169e1;
+            top: -150px;
+            left: 60px;
+            animation-delay: 0.8s;
+        }
+
+        .ornament:nth-child(7) {
+            width: 15px;
+            height: 15px;
+            background: #ff3b3b;
+            top: -120px;
+            left: -85px;
+            animation-delay: 1.2s;
+        }
+
+        .ornament:nth-child(8) {
+            width: 17px;
+            height: 17px;
+            background: #ffd700;
+            top: -100px;
+            left: 75px;
+            animation-delay: 0.6s;
+        }
+
+        @keyframes glow {
+            0%, 100% {
+                box-shadow: 0 0 5px currentColor;
+                transform: scale(1);
+            }
+            50% {
+                box-shadow: 0 0 20px currentColor;
+                transform: scale(1.1);
+            }
+        }
+
+        /* 눈 내리기 */
+        .snowflake {
+            position: fixed;
+            top: -10px;
+            color: white;
+            font-size: 1em;
+            animation: fall linear infinite;
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(100vh);
+            }
+        }
+
+        .snowflake:nth-child(1) { left: 10%; animation-duration: 8s; animation-delay: 0s; }
+        .snowflake:nth-child(2) { left: 20%; animation-duration: 10s; animation-delay: 1s; }
+        .snowflake:nth-child(3) { left: 30%; animation-duration: 12s; animation-delay: 2s; }
+        .snowflake:nth-child(4) { left: 40%; animation-duration: 9s; animation-delay: 0.5s; }
+        .snowflake:nth-child(5) { left: 50%; animation-duration: 11s; animation-delay: 1.5s; }
+        .snowflake:nth-child(6) { left: 60%; animation-duration: 10s; animation-delay: 0.8s; }
+        .snowflake:nth-child(7) { left: 70%; animation-duration: 8s; animation-delay: 2.5s; }
+        .snowflake:nth-child(8) { left: 80%; animation-duration: 12s; animation-delay: 1.2s; }
+        .snowflake:nth-child(9) { left: 90%; animation-duration: 9s; animation-delay: 3s; }
+
+        /* 메시지 */
+        .message {
+            position: absolute;
+            bottom: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #ffd700;
+            font-size: 24px;
+            font-family: 'Arial', sans-serif;
+            font-weight: bold;
+            text-shadow: 0 0 10px #ffd700;
+            animation: blink 2s ease-in-out infinite;
+            white-space: nowrap;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+    </style>
+</head>
+<body>
+    <!-- 눈송이 -->
+    <div class="snowflake">❄</div>
+    <div class="snowflake">❅</div>
+    <div class="snowflake">❆</div>
+    <div class="snowflake">❄</div>
+    <div class="snowflake">❅</div>
+    <div class="snowflake">❆</div>
+    <div class="snowflake">❄</div>
+    <div class="snowflake">❅</div>
+    <div class="snowflake">❆</div>
+
+    <div class="container">
+        <!-- 별 -->
+        <div class="star"></div>
+
+        <!-- 트리 -->
+        <div class="tree">
+            <div class="tree-layer"></div>
+            <div class="tree-layer"></div>
+            <div class="tree-layer"></div>
+        </div>
+
+        <!-- 장식 구슬 -->
+        <div class="ornament"></div>
+        <div class="ornament"></div>
+        <div class="ornament"></div>
+        <div class="ornament"></div>
+        <div class="ornament"></div>
+        <div class="ornament"></div>
+        <div class="ornament"></div>
+        <div class="ornament"></div>
+
+        <!-- 기둥 -->
+        <div class="trunk"></div>
+
+        <!-- 메시지 -->
+        <div class="message">Merry Christmas! 🎄</div>
+    </div>
+</body>
+</html>
