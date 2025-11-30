@@ -371,9 +371,550 @@
             animation-delay: 7.5s;
             --spiral-x: -95px;
         }
+
+        /* 산타와 루돌프 */
+        .santa-container {
+            position: fixed;
+            top: 15%;
+            left: -400px;
+            animation: santa-fly 20s linear infinite;
+            z-index: 100;
+            filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.3));
+        }
+
+        @keyframes santa-fly {
+            0% {
+                left: -400px;
+                transform: translateY(0);
+            }
+            25% {
+                transform: translateY(-10px);
+            }
+            50% {
+                transform: translateY(0);
+            }
+            75% {
+                transform: translateY(-10px);
+            }
+            100% {
+                left: calc(100% + 400px);
+                transform: translateY(0);
+            }
+        }
+
+        /* 루돌프 공통 스타일 */
+        .reindeer {
+            position: absolute;
+            width: 70px;
+            height: 60px;
+        }
+
+        .reindeer-body {
+            position: absolute;
+            width: 45px;
+            height: 32px;
+            background: linear-gradient(135deg, #A0522D 0%, #8B4513 50%, #654321 100%);
+            border-radius: 20px;
+            bottom: 10px;
+            left: 0;
+            box-shadow: inset -3px -3px 6px rgba(0, 0, 0, 0.3),
+                        inset 3px 3px 6px rgba(160, 82, 45, 0.5);
+        }
+
+        .reindeer-head {
+            position: absolute;
+            width: 28px;
+            height: 24px;
+            background: linear-gradient(135deg, #A0522D 0%, #8B4513 100%);
+            border-radius: 15px;
+            bottom: 25px;
+            left: 40px;
+            box-shadow: inset -2px -2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .reindeer-eye {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #000;
+            border-radius: 50%;
+            bottom: 32px;
+            left: 55px;
+        }
+
+        .reindeer-nose {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: radial-gradient(circle at 30% 30%, #ff4444, #cc0000);
+            border-radius: 50%;
+            bottom: 28px;
+            left: 65px;
+            box-shadow: 0 0 15px #ff0000, 0 0 25px rgba(255, 0, 0, 0.5);
+            animation: nose-glow 1.5s ease-in-out infinite;
+        }
+
+        @keyframes nose-glow {
+            0%, 100% {
+                box-shadow: 0 0 15px #ff0000, 0 0 25px rgba(255, 0, 0, 0.5);
+                transform: scale(1);
+            }
+            50% {
+                box-shadow: 0 0 25px #ff0000, 0 0 40px rgba(255, 0, 0, 0.8), 0 0 60px rgba(255, 0, 0, 0.4);
+                transform: scale(1.1);
+            }
+        }
+
+        .antler {
+            position: absolute;
+            width: 2px;
+            height: 12px;
+            background: linear-gradient(to top, #654321, #8B6914);
+            border-radius: 2px;
+            bottom: 45px;
+        }
+
+        .antler::before,
+        .antler::after {
+            content: '';
+            position: absolute;
+            width: 2px;
+            height: 6px;
+            background: linear-gradient(to top, #654321, #8B6914);
+            border-radius: 2px;
+        }
+
+        .antler-left {
+            left: 47px;
+            transform: rotate(-20deg);
+        }
+
+        .antler-left::before {
+            top: 2px;
+            left: -3px;
+            transform: rotate(-30deg);
+        }
+
+        .antler-left::after {
+            top: 2px;
+            left: 3px;
+            transform: rotate(30deg);
+        }
+
+        .antler-right {
+            left: 58px;
+            transform: rotate(20deg);
+        }
+
+        .antler-right::before {
+            top: 2px;
+            left: -3px;
+            transform: rotate(-30deg);
+        }
+
+        .antler-right::after {
+            top: 2px;
+            left: 3px;
+            transform: rotate(30deg);
+        }
+
+        .reindeer-leg {
+            position: absolute;
+            width: 4px;
+            height: 18px;
+            background: linear-gradient(to bottom, #8B4513, #654321);
+            border-radius: 2px;
+            animation: leg-run 0.6s ease-in-out infinite;
+        }
+
+        @keyframes leg-run {
+            0%, 100% { height: 18px; }
+            50% { height: 16px; }
+        }
+
+        .leg1 { bottom: -8px; left: 5px; animation-delay: 0s; }
+        .leg2 { bottom: -8px; left: 15px; animation-delay: 0.3s; }
+        .leg3 { bottom: -8px; left: 28px; animation-delay: 0.15s; }
+        .leg4 { bottom: -8px; left: 38px; animation-delay: 0.45s; }
+
+        /* 루돌프 배치 */
+        .reindeer:nth-child(1) {
+            left: 0;
+            top: 0;
+            z-index: 5;
+        }
+
+        .reindeer:nth-child(2) {
+            left: 60px;
+            top: 5px;
+            z-index: 4;
+            transform: scale(0.95);
+        }
+
+        .reindeer:nth-child(3) {
+            left: 120px;
+            top: 8px;
+            z-index: 3;
+            transform: scale(0.9);
+        }
+
+        .reindeer:nth-child(4) {
+            left: 30px;
+            top: -8px;
+            z-index: 4;
+            transform: scale(0.95);
+        }
+
+        .reindeer:nth-child(5) {
+            left: 90px;
+            top: -5px;
+            z-index: 4;
+            transform: scale(0.93);
+        }
+
+        /* 썰매 */
+        .sleigh {
+            position: absolute;
+            bottom: 0;
+            left: 130px;
+            width: 120px;
+            height: 60px;
+        }
+
+        .sleigh-body {
+            position: absolute;
+            width: 110px;
+            height: 45px;
+            background: linear-gradient(135deg, #B22222 0%, #8B0000 50%, #660000 100%);
+            border-radius: 20px 20px 50px 50px;
+            bottom: 8px;
+            left: 0;
+            border: 4px solid #FFD700;
+            box-shadow: inset -5px -5px 10px rgba(0, 0, 0, 0.4),
+                        inset 5px 5px 10px rgba(255, 215, 0, 0.2),
+                        0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .sleigh-body::before {
+            content: '';
+            position: absolute;
+            width: 100px;
+            height: 15px;
+            background: linear-gradient(to right, transparent, rgba(255, 215, 0, 0.3), transparent);
+            top: 15px;
+            left: 5px;
+            border-radius: 10px;
+        }
+
+        .sleigh-runner {
+            position: absolute;
+            width: 115px;
+            height: 10px;
+            background: linear-gradient(to bottom, #E8E8E8, #C0C0C0, #A8A8A8);
+            border-radius: 60px;
+            bottom: 0;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3),
+                        inset 0 1px 2px rgba(255, 255, 255, 0.5);
+        }
+
+        .sleigh-runner-left {
+            left: -5px;
+            transform: rotate(-2deg);
+        }
+
+        .sleigh-runner-right {
+            left: 5px;
+            transform: rotate(-2deg);
+        }
+
+        .sleigh-decoration {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: radial-gradient(circle at 30% 30%, #FFE55C, #FFD700, #DAA520);
+            border-radius: 50%;
+            bottom: 25px;
+            box-shadow: 0 0 8px rgba(255, 215, 0, 0.6),
+                        inset -1px -1px 3px rgba(0, 0, 0, 0.3);
+            animation: decoration-sparkle 2s ease-in-out infinite;
+        }
+
+        @keyframes decoration-sparkle {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .sleigh-decoration:nth-child(1) { left: 15px; animation-delay: 0s; }
+        .sleigh-decoration:nth-child(2) { left: 35px; animation-delay: 0.5s; }
+        .sleigh-decoration:nth-child(3) { left: 55px; animation-delay: 1s; }
+        .sleigh-decoration:nth-child(4) { left: 75px; animation-delay: 1.5s; }
+
+        /* 루돌프와 썰매 연결 줄 */
+        .reindeer-rope {
+            position: absolute;
+            width: 180px;
+            height: 2px;
+            background: linear-gradient(to right,
+                #654321 0%,
+                #8B4513 20%,
+                #654321 40%,
+                #8B4513 60%,
+                #654321 80%,
+                #8B4513 100%);
+            bottom: 25px;
+            left: 65px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        .reindeer-rope::before {
+            content: '';
+            position: absolute;
+            width: 2px;
+            height: 15px;
+            background: #654321;
+            left: 30px;
+            top: -7px;
+        }
+
+        .reindeer-rope::after {
+            content: '';
+            position: absolute;
+            width: 2px;
+            height: 15px;
+            background: #654321;
+            left: 90px;
+            top: -7px;
+        }
+
+        /* 산타 */
+        .santa {
+            position: absolute;
+            bottom: 35px;
+            left: 160px;
+        }
+
+        .santa-body {
+            position: absolute;
+            width: 40px;
+            height: 50px;
+            background: linear-gradient(135deg, #FF1744 0%, #dc143c 50%, #B71C1C 100%);
+            border-radius: 10px;
+            bottom: 10px;
+            left: 0;
+            box-shadow: inset -3px -3px 6px rgba(0, 0, 0, 0.3),
+                        inset 3px 3px 6px rgba(255, 100, 100, 0.3);
+        }
+
+        .santa-belt {
+            position: absolute;
+            width: 40px;
+            height: 10px;
+            background: linear-gradient(to bottom, #1a1a1a, #000000);
+            bottom: 30px;
+            left: 0;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .santa-buckle {
+            position: absolute;
+            width: 14px;
+            height: 10px;
+            background: linear-gradient(135deg, #FFE55C, #FFD700, #DAA520);
+            bottom: 30px;
+            left: 13px;
+            border-radius: 2px;
+            box-shadow: 0 0 5px rgba(255, 215, 0, 0.5),
+                        inset -1px -1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        .santa-head {
+            position: absolute;
+            width: 28px;
+            height: 28px;
+            background: radial-gradient(circle at 40% 40%, #FFE4C4, #FFDAB9, #FFCBA4);
+            border-radius: 50%;
+            bottom: 55px;
+            left: 6px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .santa-hat {
+            position: absolute;
+            width: 0;
+            height: 0;
+            border-left: 18px solid transparent;
+            border-right: 18px solid transparent;
+            border-bottom: 30px solid #dc143c;
+            bottom: 78px;
+            left: 2px;
+            filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.3));
+        }
+
+        .santa-hat-pom {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: radial-gradient(circle at 30% 30%, #FFFFFF, #F0F0F0);
+            border-radius: 50%;
+            bottom: 106px;
+            left: 15px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2),
+                        inset -1px -1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .santa-hat-trim {
+            position: absolute;
+            width: 36px;
+            height: 6px;
+            background: linear-gradient(to bottom, #FFFFFF, #F0F0F0);
+            border-radius: 3px;
+            bottom: 78px;
+            left: 2px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+        }
+
+        .santa-beard {
+            position: absolute;
+            width: 22px;
+            height: 15px;
+            background: radial-gradient(ellipse at center, #FFFFFF, #F5F5F5);
+            border-radius: 0 0 11px 11px;
+            bottom: 55px;
+            left: 9px;
+            box-shadow: inset 0 -2px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .santa-arm {
+            position: absolute;
+            width: 10px;
+            height: 28px;
+            background: linear-gradient(135deg, #FF1744, #dc143c);
+            border-radius: 5px;
+            box-shadow: -1px 1px 3px rgba(0, 0, 0, 0.3);
+        }
+
+        .santa-arm-left {
+            bottom: 25px;
+            left: -6px;
+            transform: rotate(-50deg);
+        }
+
+        .santa-arm-right {
+            bottom: 25px;
+            right: -6px;
+            transform: rotate(50deg);
+        }
+
+        /* 산타 이름표 */
+        .santa-name {
+            position: absolute;
+            bottom: -20px;
+            left: -5px;
+            color: #FFD700;
+            font-size: 16px;
+            font-weight: bold;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.8),
+                         0 0 20px rgba(255, 215, 0, 0.5),
+                         2px 2px 4px rgba(0, 0, 0, 0.5);
+            white-space: nowrap;
+            letter-spacing: 1px;
+        }
     </style>
 </head>
 <body>
+    <!-- 산타와 루돌프 -->
+    <div class="santa-container">
+        <!-- 루돌프 1 -->
+        <div class="reindeer">
+            <div class="reindeer-body"></div>
+            <div class="reindeer-head"></div>
+            <div class="reindeer-eye"></div>
+            <div class="reindeer-nose"></div>
+            <div class="antler antler-left"></div>
+            <div class="antler antler-right"></div>
+            <div class="reindeer-leg leg1"></div>
+            <div class="reindeer-leg leg2"></div>
+            <div class="reindeer-leg leg3"></div>
+            <div class="reindeer-leg leg4"></div>
+        </div>
+        <!-- 루돌프 2 -->
+        <div class="reindeer">
+            <div class="reindeer-body"></div>
+            <div class="reindeer-head"></div>
+            <div class="reindeer-eye"></div>
+            <div class="reindeer-nose"></div>
+            <div class="antler antler-left"></div>
+            <div class="antler antler-right"></div>
+            <div class="reindeer-leg leg1"></div>
+            <div class="reindeer-leg leg2"></div>
+            <div class="reindeer-leg leg3"></div>
+            <div class="reindeer-leg leg4"></div>
+        </div>
+        <!-- 루돌프 3 -->
+        <div class="reindeer">
+            <div class="reindeer-body"></div>
+            <div class="reindeer-head"></div>
+            <div class="reindeer-eye"></div>
+            <div class="reindeer-nose"></div>
+            <div class="antler antler-left"></div>
+            <div class="antler antler-right"></div>
+            <div class="reindeer-leg leg1"></div>
+            <div class="reindeer-leg leg2"></div>
+            <div class="reindeer-leg leg3"></div>
+            <div class="reindeer-leg leg4"></div>
+        </div>
+        <!-- 루돌프 4 -->
+        <div class="reindeer">
+            <div class="reindeer-body"></div>
+            <div class="reindeer-head"></div>
+            <div class="reindeer-eye"></div>
+            <div class="reindeer-nose"></div>
+            <div class="antler antler-left"></div>
+            <div class="antler antler-right"></div>
+            <div class="reindeer-leg leg1"></div>
+            <div class="reindeer-leg leg2"></div>
+            <div class="reindeer-leg leg3"></div>
+            <div class="reindeer-leg leg4"></div>
+        </div>
+        <!-- 루돌프 5 -->
+        <div class="reindeer">
+            <div class="reindeer-body"></div>
+            <div class="reindeer-head"></div>
+            <div class="reindeer-eye"></div>
+            <div class="reindeer-nose"></div>
+            <div class="antler antler-left"></div>
+            <div class="antler antler-right"></div>
+            <div class="reindeer-leg leg1"></div>
+            <div class="reindeer-leg leg2"></div>
+            <div class="reindeer-leg leg3"></div>
+            <div class="reindeer-leg leg4"></div>
+        </div>
+        <div class="reindeer-rope"></div>
+        <div class="sleigh">
+            <div class="sleigh-body">
+                <div class="sleigh-decoration"></div>
+                <div class="sleigh-decoration"></div>
+                <div class="sleigh-decoration"></div>
+                <div class="sleigh-decoration"></div>
+            </div>
+            <div class="sleigh-runner sleigh-runner-left"></div>
+            <div class="sleigh-runner sleigh-runner-right"></div>
+        </div>
+        <div class="santa">
+            <div class="santa-body"></div>
+            <div class="santa-belt"></div>
+            <div class="santa-buckle"></div>
+            <div class="santa-head"></div>
+            <div class="santa-hat"></div>
+            <div class="santa-hat-pom"></div>
+            <div class="santa-hat-trim"></div>
+            <div class="santa-beard"></div>
+            <div class="santa-arm santa-arm-left"></div>
+            <div class="santa-arm santa-arm-right"></div>
+            <div class="santa-name">임수현</div>
+        </div>
+    </div>
+
     <!-- 눈송이 -->
     <div class="snowflake">❄</div>
     <div class="snowflake">❅</div>
