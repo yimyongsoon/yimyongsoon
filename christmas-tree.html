@@ -15,9 +15,10 @@
             height: 100vh;
             display: flex;
             justify-content: center;
-            align-items: center;
+            align-items: flex-end;
             background: linear-gradient(to bottom, #0a1929, #1a365d);
             overflow: hidden;
+            padding-bottom: 50px;
         }
 
         .container {
@@ -35,33 +36,33 @@
             position: absolute;
             left: 50%;
             transform: translateX(-50%);
-            border-left: 80px solid transparent;
-            border-right: 80px solid transparent;
-            border-bottom: 120px solid #2d5016;
+            border-left: 160px solid transparent;
+            border-right: 160px solid transparent;
+            border-bottom: 240px solid #2d5016;
             animation: sway 3s ease-in-out infinite;
         }
 
         .tree-layer:nth-child(1) {
-            top: -300px;
-            border-left-width: 60px;
-            border-right-width: 60px;
-            border-bottom-width: 100px;
+            top: -600px;
+            border-left-width: 120px;
+            border-right-width: 120px;
+            border-bottom-width: 200px;
             border-bottom-color: #3a6b1f;
         }
 
         .tree-layer:nth-child(2) {
-            top: -230px;
-            border-left-width: 80px;
-            border-right-width: 80px;
-            border-bottom-width: 120px;
+            top: -460px;
+            border-left-width: 160px;
+            border-right-width: 160px;
+            border-bottom-width: 240px;
             border-bottom-color: #2d5016;
         }
 
         .tree-layer:nth-child(3) {
-            top: -140px;
-            border-left-width: 100px;
-            border-right-width: 100px;
-            border-bottom-width: 140px;
+            top: -280px;
+            border-left-width: 200px;
+            border-right-width: 200px;
+            border-bottom-width: 280px;
             border-bottom-color: #1f3d0f;
         }
 
@@ -80,10 +81,10 @@
             left: 50%;
             transform: translateX(-50%);
             top: 0;
-            width: 40px;
-            height: 60px;
+            width: 80px;
+            height: 120px;
             background: #4a2511;
-            border-radius: 5px;
+            border-radius: 10px;
         }
 
         /* 꼭대기 별 */
@@ -91,12 +92,12 @@
             position: absolute;
             left: 50%;
             transform: translateX(-50%);
-            top: -340px;
+            top: -680px;
             width: 0;
             height: 0;
-            border-left: 20px solid transparent;
-            border-right: 20px solid transparent;
-            border-bottom: 30px solid #ffd700;
+            border-left: 40px solid transparent;
+            border-right: 40px solid transparent;
+            border-bottom: 60px solid #ffd700;
             animation: sparkle 1.5s ease-in-out infinite;
         }
 
@@ -105,11 +106,11 @@
             position: absolute;
             width: 0;
             height: 0;
-            border-left: 20px solid transparent;
-            border-right: 20px solid transparent;
-            border-top: 30px solid #ffd700;
-            top: 5px;
-            left: -20px;
+            border-left: 40px solid transparent;
+            border-right: 40px solid transparent;
+            border-top: 60px solid #ffd700;
+            top: 10px;
+            left: -40px;
         }
 
         @keyframes sparkle {
@@ -133,74 +134,74 @@
         }
 
         .ornament:nth-child(1) {
-            width: 15px;
-            height: 15px;
+            width: 30px;
+            height: 30px;
             background: #ff3b3b;
-            top: -280px;
-            left: -30px;
+            top: -560px;
+            left: -60px;
             animation-delay: 0s;
         }
 
         .ornament:nth-child(2) {
-            width: 12px;
-            height: 12px;
+            width: 24px;
+            height: 24px;
             background: #ffd700;
-            top: -260px;
-            left: 20px;
+            top: -520px;
+            left: 40px;
             animation-delay: 0.5s;
         }
 
         .ornament:nth-child(3) {
-            width: 18px;
-            height: 18px;
+            width: 36px;
+            height: 36px;
             background: #4169e1;
-            top: -220px;
-            left: -50px;
+            top: -440px;
+            left: -100px;
             animation-delay: 1s;
         }
 
         .ornament:nth-child(4) {
-            width: 14px;
-            height: 14px;
+            width: 28px;
+            height: 28px;
             background: #ff3b3b;
-            top: -200px;
-            left: 40px;
+            top: -400px;
+            left: 80px;
             animation-delay: 1.5s;
         }
 
         .ornament:nth-child(5) {
-            width: 16px;
-            height: 16px;
+            width: 32px;
+            height: 32px;
             background: #ffd700;
-            top: -170px;
-            left: -70px;
+            top: -340px;
+            left: -140px;
             animation-delay: 0.3s;
         }
 
         .ornament:nth-child(6) {
-            width: 13px;
-            height: 13px;
+            width: 26px;
+            height: 26px;
             background: #4169e1;
-            top: -150px;
-            left: 60px;
+            top: -300px;
+            left: 120px;
             animation-delay: 0.8s;
         }
 
         .ornament:nth-child(7) {
-            width: 15px;
-            height: 15px;
+            width: 30px;
+            height: 30px;
             background: #ff3b3b;
-            top: -120px;
-            left: -85px;
+            top: -240px;
+            left: -170px;
             animation-delay: 1.2s;
         }
 
         .ornament:nth-child(8) {
-            width: 17px;
-            height: 17px;
+            width: 34px;
+            height: 34px;
             background: #ffd700;
-            top: -100px;
-            left: 75px;
+            top: -200px;
+            left: 150px;
             animation-delay: 0.6s;
         }
 
@@ -263,12 +264,12 @@
         /* 소용돌이 별빛 */
         .sparkle-particle {
             position: absolute;
-            width: 4px;
-            height: 4px;
+            width: 20px;
+            height: 20px;
             background: #ffd700;
             border-radius: 50%;
-            box-shadow: 0 0 10px #ffd700, 0 0 20px #ffd700;
-            animation: spiral-up 8s linear infinite;
+            box-shadow: 0 0 30px #ffd700, 0 0 60px #ffd700, 0 0 90px rgba(255, 215, 0, 0.5);
+            animation: spiral-up 4s linear infinite;
             opacity: 0;
         }
 
@@ -285,9 +286,9 @@
                 opacity: 1;
             }
             100% {
-                bottom: 400px;
+                bottom: 800px;
                 opacity: 0;
-                transform: translateX(var(--spiral-x)) scale(1.5);
+                transform: translateX(var(--spiral-x)) scale(2);
             }
         }
 
@@ -537,37 +538,37 @@
         .leg3 { bottom: -8px; left: 28px; animation-delay: 0.15s; }
         .leg4 { bottom: -8px; left: 38px; animation-delay: 0.45s; }
 
-        /* 루돌프 배치 */
+        /* 루돌프 배치 - 앞에 위치 */
         .reindeer:nth-child(1) {
             left: 0;
-            top: 0;
+            top: 15px;
             z-index: 5;
         }
 
         .reindeer:nth-child(2) {
-            left: 60px;
-            top: 5px;
+            left: 55px;
+            top: 20px;
             z-index: 4;
             transform: scale(0.95);
         }
 
         .reindeer:nth-child(3) {
-            left: 120px;
-            top: 8px;
+            left: 110px;
+            top: 23px;
             z-index: 3;
             transform: scale(0.9);
         }
 
         .reindeer:nth-child(4) {
-            left: 30px;
-            top: -8px;
+            left: 25px;
+            top: 5px;
             z-index: 4;
             transform: scale(0.95);
         }
 
         .reindeer:nth-child(5) {
-            left: 90px;
-            top: -5px;
+            left: 80px;
+            top: 8px;
             z-index: 4;
             transform: scale(0.93);
         }
@@ -576,7 +577,7 @@
         .sleigh {
             position: absolute;
             bottom: 0;
-            left: 130px;
+            left: 180px;
             width: 120px;
             height: 60px;
         }
@@ -652,7 +653,7 @@
         /* 루돌프와 썰매 연결 줄 */
         .reindeer-rope {
             position: absolute;
-            width: 180px;
+            width: 230px;
             height: 2px;
             background: linear-gradient(to right,
                 #654321 0%,
@@ -661,36 +662,39 @@
                 #8B4513 60%,
                 #654321 80%,
                 #8B4513 100%);
-            bottom: 25px;
-            left: 65px;
+            bottom: 30px;
+            left: 60px;
             box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
         }
 
+        /* 각 루돌프에서 메인 줄로 연결되는 줄들 */
         .reindeer-rope::before {
             content: '';
             position: absolute;
             width: 2px;
-            height: 15px;
+            height: 20px;
             background: #654321;
-            left: 30px;
-            top: -7px;
+            left: 10px;
+            top: -12px;
+            transform: rotate(-15deg);
         }
 
         .reindeer-rope::after {
             content: '';
             position: absolute;
             width: 2px;
-            height: 15px;
+            height: 25px;
             background: #654321;
-            left: 90px;
-            top: -7px;
+            left: 60px;
+            top: -15px;
+            transform: rotate(-10deg);
         }
 
         /* 산타 */
         .santa {
             position: absolute;
             bottom: 35px;
-            left: 160px;
+            left: 210px;
         }
 
         .santa-body {
@@ -822,6 +826,11 @@
     </style>
 </head>
 <body>
+    <!-- 배경음악 -->
+    <audio autoplay loop>
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+    </audio>
+
     <!-- 산타와 루돌프 -->
     <div class="santa-container">
         <!-- 루돌프 1 -->
