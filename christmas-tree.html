@@ -259,6 +259,118 @@
             0%, 100% { opacity: 1; }
             50% { opacity: 0.5; }
         }
+
+        /* 소용돌이 별빛 */
+        .sparkle-particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #ffd700;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #ffd700, 0 0 20px #ffd700;
+            animation: spiral-up 8s linear infinite;
+            opacity: 0;
+        }
+
+        @keyframes spiral-up {
+            0% {
+                bottom: -50px;
+                opacity: 0;
+                transform: translateX(0) scale(0.5);
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                bottom: 400px;
+                opacity: 0;
+                transform: translateX(var(--spiral-x)) scale(1.5);
+            }
+        }
+
+        .sparkle-particle:nth-child(1) {
+            left: 50%;
+            animation-delay: 0s;
+            --spiral-x: 80px;
+        }
+        .sparkle-particle:nth-child(2) {
+            left: 50%;
+            animation-delay: 0.5s;
+            --spiral-x: -80px;
+        }
+        .sparkle-particle:nth-child(3) {
+            left: 50%;
+            animation-delay: 1s;
+            --spiral-x: 100px;
+        }
+        .sparkle-particle:nth-child(4) {
+            left: 50%;
+            animation-delay: 1.5s;
+            --spiral-x: -100px;
+        }
+        .sparkle-particle:nth-child(5) {
+            left: 50%;
+            animation-delay: 2s;
+            --spiral-x: 60px;
+        }
+        .sparkle-particle:nth-child(6) {
+            left: 50%;
+            animation-delay: 2.5s;
+            --spiral-x: -60px;
+        }
+        .sparkle-particle:nth-child(7) {
+            left: 50%;
+            animation-delay: 3s;
+            --spiral-x: 90px;
+        }
+        .sparkle-particle:nth-child(8) {
+            left: 50%;
+            animation-delay: 3.5s;
+            --spiral-x: -90px;
+        }
+        .sparkle-particle:nth-child(9) {
+            left: 50%;
+            animation-delay: 4s;
+            --spiral-x: 70px;
+        }
+        .sparkle-particle:nth-child(10) {
+            left: 50%;
+            animation-delay: 4.5s;
+            --spiral-x: -70px;
+        }
+        .sparkle-particle:nth-child(11) {
+            left: 50%;
+            animation-delay: 5s;
+            --spiral-x: 110px;
+        }
+        .sparkle-particle:nth-child(12) {
+            left: 50%;
+            animation-delay: 5.5s;
+            --spiral-x: -110px;
+        }
+        .sparkle-particle:nth-child(13) {
+            left: 50%;
+            animation-delay: 6s;
+            --spiral-x: 50px;
+        }
+        .sparkle-particle:nth-child(14) {
+            left: 50%;
+            animation-delay: 6.5s;
+            --spiral-x: -50px;
+        }
+        .sparkle-particle:nth-child(15) {
+            left: 50%;
+            animation-delay: 7s;
+            --spiral-x: 95px;
+        }
+        .sparkle-particle:nth-child(16) {
+            left: 50%;
+            animation-delay: 7.5s;
+            --spiral-x: -95px;
+        }
     </style>
 </head>
 <body>
@@ -274,6 +386,24 @@
     <div class="snowflake">❆</div>
 
     <div class="container">
+        <!-- 소용돌이 별빛 -->
+        <div class="sparkle-particle"></div>
+        <div class="sparkle-particle"></div>
+        <div class="sparkle-particle"></div>
+        <div class="sparkle-particle"></div>
+        <div class="sparkle-particle"></div>
+        <div class="sparkle-particle"></div>
+        <div class="sparkle-particle"></div>
+        <div class="sparkle-particle"></div>
+        <div class="sparkle-particle"></div>
+        <div class="sparkle-particle"></div>
+        <div class="sparkle-particle"></div>
+        <div class="sparkle-particle"></div>
+        <div class="sparkle-particle"></div>
+        <div class="sparkle-particle"></div>
+        <div class="sparkle-particle"></div>
+        <div class="sparkle-particle"></div>
+
         <!-- 별 -->
         <div class="star"></div>
 
