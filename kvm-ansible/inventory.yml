@@ -1,10 +1,33 @@
 ---
-# KVM 호스트 인벤토리
+# KVM 호스트 인벤토리 (Rocky9 localhost)
 all:
   children:
     kvm_hosts:
       hosts:
-        kvm-host:
-          ansible_host: <KVM_호스트_IP>  # 실제 Rocky9 서버 IP로 변경
-          ansible_user: root  # 또는 sudo 가능한 사용자
+        localhost:
+          ansible_connection: local
           ansible_python_interpreter: /usr/bin/python3
+
+    # Apache 설치 대상 (생성된 Ubuntu VMs)
+    apache_servers:
+      hosts:
+        ubuntu-web01:
+          ansible_host: 172.30.1.42
+          ansible_user: gtckorea
+          ansible_ssh_pass: "{{ vm_default_password }}"
+        ubuntu-web02:
+          ansible_host: 172.30.1.43
+          ansible_user: gtckorea
+          ansible_ssh_pass: "{{ vm_default_password }}"
+
+    # Tomcat 설치 대상 (생성된 Ubuntu VMs)
+    tomcat_servers:
+      hosts:
+        ubuntu-app01:
+          ansible_host: 172.30.1.45
+          ansible_user: gtckorea
+          ansible_ssh_pass: "{{ vm_default_password }}"
+        ubuntu-app02:
+          ansible_host: 172.30.1.46
+          ansible_user: gtckorea
+          ansible_ssh_pass: "{{ vm_default_password }}"

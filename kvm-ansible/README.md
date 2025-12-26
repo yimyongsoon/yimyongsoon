@@ -2,52 +2,37 @@
 
 Rocky Linux 9 + KVM/libvirt 환경에서 Ubuntu 24.04 VM을 cloud-init 기반으로 자동 생성
 
-## 사전 설정 (필수)
+## 사전 설정 (Rocky9 KVM 호스트에서 실행)
 
-### 0. Python venv 환경 구성
+### 1. 시스템 패키지 설치
 ```bash
-# KVM 호스트에서 실행
-cd /path/to/kvm-ansible
+# Ansible 및 KVM 관련 패키지 설치 (root 권한)
+dnf install -y epel-release
+dnf install -y ansible-core python3-pip python3-libvirt python3-lxml
+dnf install -y libvirt libvirt-client qemu-kvm virt-install qemu-img
+dnf install -y libguestfs-tools genisoimage
 
-# Python venv 생성
-python3 -m venv venv
-
-# venv 활성화
-source venv/bin/activate
-
-# Ansible 및 필수 패키지 설치
-pip install --upgrade pip
-pip install ansible ansible-core
-
-# Ansible 컬렉션 설치
-ansible-galaxy collection install -r requirements.yml
-
-# 작업 완료 후 venv 비활성화
-# deactivate
-```
-
-**이후 모든 ansible-playbook 명령은 venv 활성화 후 실행:**
-```bash
-source venv/bin/activate
-ansible-playbook ...
-```
-
-### 1. KVM 호스트 기본 패키지
-```bash
-# Rocky9 시스템 패키지 설치 (root 권한)
-dnf install -y python3 python3-pip libvirt libvirt-client qemu-kvm virt-install
+# libvirtd 시작 및 활성화
+systemctl enable --now libvirtd
 
 # 브릿지 네트워크 확인
 virsh net-list --all
 # br0 네트워크가 있어야 함 (172.30.1.0/24)
 ```
 
-### 2. 설정 파일 수정
+### 2. Ansible 컬렉션 설치
+```bash
+cd /path/to/kvm-ansible
+ansible-galaxy collection install -r requirements.yml
+```
+
+### 3. 설정 파일 수정
 
 #### inventory.yml
+Rocky9에서 localhost로 실행하므로 수정 불필요 (기본값 사용)
 ```yaml
-kvm-host:
-  ansible_host: <KVM_호스트_실제_IP>  # 변경 필요
+localhost:
+  ansible_connection: local
 ```
 
 #### vms.yml
@@ -185,31 +170,44 @@ kvm-ansible/
 │   │       │   └── templates/
 │   │       │       └── user-data-custom.j2
 │   │       └── README.md
-│   └── apache/
-│       ├── apache-install.yml           # Apache 설치
+│   ├── apache/
+│   │   ├── apache-install.yml           # Apache 설치
+│   │   ├── files/
+│   │   │   ├── values.yml              # Apache 설정
+│   │   │   └── templates/
+│   │   │       ├── ports.conf.j2
+│   │   │       ├── vhost.conf.j2
+│   │   │       └── index.html.j2
+│   │   └── README.md
+│   └── tomcat/
+│       ├── tomcat-install.yml           # Tomcat 설치
 │       ├── files/
-│       │   ├── values.yml              # Apache 설정
+│       │   ├── values.yml              # Tomcat 설정
 │       │   └── templates/
-│       │       ├── ports.conf.j2
-│       │       ├── vhost.conf.j2
-│       │       └── index.html.j2
+│       │       ├── server.xml.j2
+│       │       ├── tomcat-users.xml.j2
+│       │       ├── context.xml.j2
+│       │       └── tomcat.service.j2
 │       └── README.md
-├── venv/                                # Python 가상환경 (생성 필요)
 └── README.md
 ```
 
-## 주요 플레이북
+## 주요 플레이북 사용법
 
 ### VM 생성
 ```bash
-source venv/bin/activate
+cd /path/to/kvm-ansible
 ansible-playbook -i inventory.yml custom-playbooks/VMs/ubuntu/ubuntu-install.yml
 ```
 
 ### Apache 설치
 ```bash
-source venv/bin/activate
 ansible-playbook -i inventory.yml custom-playbooks/apache/apache-install.yml
+```
+
+### Tomcat 설치
+```bash
+ansible-playbook -i inventory.yml custom-playbooks/tomcat/tomcat-install.yml
 ```
 
 상세한 사용법은 각 디렉토리의 README.md 참조

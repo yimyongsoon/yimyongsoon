@@ -1,0 +1,42 @@
+---
+# Tomcat 설치 변수 파일
+# Tomcat 버전, 포트, 관리자 계정 등 설정
+
+# Tomcat 버전
+tomcat_version: "10.1.34"  # 최신 Tomcat 10.1.x 버전
+tomcat_major_version: "10"
+
+# 다운로드 URL
+tomcat_download_url: "https://archive.apache.org/dist/tomcat/tomcat-{{ tomcat_major_version }}/v{{ tomcat_version }}/bin/apache-tomcat-{{ tomcat_version }}.tar.gz"
+
+# 설치 경로
+tomcat_home: /opt/tomcat
+tomcat_user: tomcat
+
+# Java 버전
+tomcat_java_package: openjdk-17-jdk  # Tomcat 10.1은 Java 11+ 필요
+
+# 포트 설정
+tomcat_port: 8080
+tomcat_shutdown_port: 8005
+tomcat_ajp_port: 8009
+
+# 관리자 계정
+tomcat_admin_user: admin
+tomcat_admin_password: tomcat_admin_2024  # 운영 환경에서는 반드시 변경
+
+# Manager 앱 접근 허용 IP (보안)
+tomcat_manager_allow_ips:
+  - "172.30.1.0/24"  # 내부 네트워크
+  - "127.0.0.1"      # localhost
+
+# JVM 옵션
+tomcat_java_opts: "-Djava.awt.headless=true -Djava.security.egd=file:/dev/./urandom"
+tomcat_catalina_opts: "-Xms512M -Xmx1024M -server -XX:+UseParallelGC"
+
+# 방화벽 설정
+tomcat_configure_firewall: true
+
+# 자동 배포 활성화
+tomcat_autodeploy: true
+tomcat_unpack_wars: true

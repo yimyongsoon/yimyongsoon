@@ -1,0 +1,143 @@
+---
+# Tomcat 설치 플레이북
+# Rocky9 KVM 호스트에서 실행
+# ansible-playbook -i inventory.yml custom-playbooks/tomcat/tomcat-install.yml
+
+- name: Install and configure Apache Tomcat on Ubuntu VMs
+  hosts: tomcat_servers
+  gather_facts: true
+  become: true
+
+  vars_files:
+    - files/values.yml
+
+  tasks:
+    - name: Update apt cache
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 3600
+
+    - name: Install OpenJDK
+      ansible.builtin.apt:
+        name: "{{ tomcat_java_package }}"
+        state: present
+
+    - name: Create Tomcat group
+      ansible.builtin.group:
+        name: "{{ tomcat_user }}"
+        state: present
+
+    - name: Create Tomcat user
+      ansible.builtin.user:
+        name: "{{ tomcat_user }}"
+        group: "{{ tomcat_user }}"
+        home: "{{ tomcat_home }}"
+        shell: /bin/false
+        state: present
+
+    - name: Download Tomcat
+      ansible.builtin.get_url:
+        url: "{{ tomcat_download_url }}"
+        dest: "/tmp/apache-tomcat-{{ tomcat_version }}.tar.gz"
+        mode: '0644'
+
+    - name: Extract Tomcat
+      ansible.builtin.unarchive:
+        src: "/tmp/apache-tomcat-{{ tomcat_version }}.tar.gz"
+        dest: /opt
+        remote_src: true
+        creates: "/opt/apache-tomcat-{{ tomcat_version }}"
+
+    - name: Create Tomcat symlink
+      ansible.builtin.file:
+        src: "/opt/apache-tomcat-{{ tomcat_version }}"
+        dest: "{{ tomcat_home }}"
+        state: link
+
+    - name: Set ownership
+      ansible.builtin.file:
+        path: "/opt/apache-tomcat-{{ tomcat_version }}"
+        owner: "{{ tomcat_user }}"
+        group: "{{ tomcat_user }}"
+        recurse: true
+
+    - name: Make scripts executable
+      ansible.builtin.file:
+        path: "{{ tomcat_home }}/bin/{{ item }}"
+        mode: '0755'
+      loop:
+        - catalina.sh
+        - startup.sh
+        - shutdown.sh
+
+    - name: Deploy server.xml
+      ansible.builtin.template:
+        src: files/templates/server.xml.j2
+        dest: "{{ tomcat_home }}/conf/server.xml"
+        owner: "{{ tomcat_user }}"
+        group: "{{ tomcat_user }}"
+        mode: '0644'
+      notify: Restart Tomcat
+
+    - name: Deploy tomcat-users.xml
+      ansible.builtin.template:
+        src: files/templates/tomcat-users.xml.j2
+        dest: "{{ tomcat_home }}/conf/tomcat-users.xml"
+        owner: "{{ tomcat_user }}"
+        group: "{{ tomcat_user }}"
+        mode: '0600'
+      notify: Restart Tomcat
+
+    - name: Deploy context.xml for Manager app
+      ansible.builtin.template:
+        src: files/templates/context.xml.j2
+        dest: "{{ tomcat_home }}/webapps/manager/META-INF/context.xml"
+        owner: "{{ tomcat_user }}"
+        group: "{{ tomcat_user }}"
+        mode: '0644'
+      notify: Restart Tomcat
+
+    - name: Create systemd service file
+      ansible.builtin.template:
+        src: files/templates/tomcat.service.j2
+        dest: /etc/systemd/system/tomcat.service
+        mode: '0644'
+      notify: Reload systemd
+
+    - name: Enable and start Tomcat
+      ansible.builtin.systemd:
+        name: tomcat
+        state: started
+        enabled: true
+        daemon_reload: true
+
+    - name: Configure firewall (ufw)
+      community.general.ufw:
+        rule: allow
+        port: "{{ tomcat_port }}"
+        proto: tcp
+      when: tomcat_configure_firewall | default(true)
+
+    - name: Wait for Tomcat to be ready
+      ansible.builtin.wait_for:
+        port: "{{ tomcat_port }}"
+        delay: 5
+        timeout: 60
+
+    - name: Display Tomcat info
+      ansible.builtin.debug:
+        msg: |
+          Tomcat {{ tomcat_version }} installed on {{ inventory_hostname }}
+          URL: http://{{ ansible_host }}:{{ tomcat_port }}
+          Manager: http://{{ ansible_host }}:{{ tomcat_port }}/manager
+          User: {{ tomcat_admin_user }}
+
+  handlers:
+    - name: Reload systemd
+      ansible.builtin.systemd:
+        daemon_reload: true
+
+    - name: Restart Tomcat
+      ansible.builtin.systemd:
+        name: tomcat
+        state: restarted
