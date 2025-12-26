@@ -93,16 +93,6 @@
         group: www-data
         mode: '0644'
 
-    - name: Configure firewall (ufw)
-      community.general.ufw:
-        rule: allow
-        port: "{{ item }}"
-        proto: tcp
-      loop:
-        - "{{ apache_http_port }}"
-        - "{{ apache_https_port | default('443') }}"
-      when: apache_configure_firewall | default(true)
-
     - name: Verify Apache is listening
       ansible.builtin.wait_for:
         port: "{{ apache_http_port }}"
