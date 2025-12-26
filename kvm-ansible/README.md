@@ -91,10 +91,10 @@ cd /home/gtckorea/workspaces/kvm-ansible
 # VM 스펙 확인/수정
 vi custom-playbooks/VMs/ubuntu/files/values.yml
 
-# Apache 웹 서버 1번 생성 (172.30.1.42)
+# Apache 웹 서버 2번 생성 (172.30.1.42)
 ansible-playbook -i inventory.yml custom-playbooks/VMs/ubuntu/ubuntu-web01-install.yml
 
-# Apache 웹 서버 2번 생성 (172.30.1.43)
+# Apache 웹 서버 3번 생성 (172.30.1.43)
 ansible-playbook -i inventory.yml custom-playbooks/VMs/ubuntu/ubuntu-web02-install.yml
 
 # Tomcat 서버 1번 생성 (172.30.1.45)
