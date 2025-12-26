@@ -10,9 +10,7 @@ users:
     sudo: ALL=(ALL) NOPASSWD:ALL
     shell: /bin/bash
     lock_passwd: false
-    # 비밀번호: {{ vm_default_password }}
-    # 아래 해시는 'appviewx1'의 SHA-512 해시
-    passwd: $6$rounds=4096$saltsaltsal$8EbLvOQMJ5xZ7Z0Y.v0w3F3vKqWvJ8pXqPZ5Z6ZvZ0Z1Z2Z3Z4Z5Z6Z7Z8Z9Z0
+    plain_text-passwd: {{ vm_default_password }}
 {% if vm_ssh_authorized_keys | length > 0 %}
     ssh_authorized_keys:
 {% for key in vm_ssh_authorized_keys %}
