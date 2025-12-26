@@ -6,8 +6,8 @@
 # 설치 대상 호스트 (inventory.yml의 호스트명 사용)
 # ============================================
 apache_target_hosts:
-  - ubuntu-web01  # 172.30.1.42
-  # - ubuntu-web02  # 172.30.1.43
+  - ubuntu-apache02  # 172.30.1.42
+  # - ubuntu-apache03  # 172.30.1.43
 
 # Apache 버전 (최신 버전은 apt에서 자동으로 설치됨)
 apache_version: "latest"  # Ubuntu 24.04 기본 저장소 버전

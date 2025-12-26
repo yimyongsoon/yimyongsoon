@@ -4,19 +4,19 @@
 
 vms:
   # Apache Web Servers
-  - name: ubuntu-web01
+  - name: ubuntu-apache02
     ip: 172.30.1.42
     vcpus: 2
     memory_mb: 4096
     disk_gb: 50
-    description: "Apache Web Server 01"
+    description: "Apache Web Server 02"
 
-  - name: ubuntu-web02
+  - name: ubuntu-apache03
     ip: 172.30.1.43
     vcpus: 2
     memory_mb: 4096
     disk_gb: 50
-    description: "Apache Web Server 02"
+    description: "Apache Web Server 03"
 
   # Tomcat Application Servers
   - name: ubuntu-tomcat01

@@ -1,19 +1,19 @@
 ---
-# Ubuntu VM 생성: ubuntu-web02 (172.30.1.43)
-# root 계정에서 실행: ansible-playbook -i inventory.yml custom-playbooks/VMs/ubuntu/ubuntu-web02-install.yml
+# Ubuntu VM 생성: ubuntu-apache03 (172.30.1.43)
+# root 계정에서 실행: ansible-playbook -i inventory.yml custom-playbooks/VMs/ubuntu/ubuntu-apache03-install.yml
 
-- name: Create ubuntu-web02 VM on KVM
+- name: Create ubuntu-apache03 VM on KVM
   hosts: localhost
   gather_facts: true
   become: true
 
   vars:
-    vm_name: ubuntu-web02
+    vm_name: ubuntu-apache03
     vm_ip: 172.30.1.43
     vm_vcpus: 2
     vm_memory_mb: 4096
     vm_disk_gb: 50
-    vm_description: "Apache Web Server 02"
+    vm_description: "Apache Web Server 03"
 
   vars_files:
     - ../../../group_vars/all.yml
