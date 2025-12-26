@@ -33,13 +33,13 @@
 
 - name: Generate user-data
   ansible.builtin.template:
-    src: ../templates/user-data.j2
+    src: ../../../../templates/user-data.j2
     dest: "/tmp/cloud-init-{{ vm_name }}/user-data"
     mode: '0644'
 
 - name: Generate meta-data
   ansible.builtin.template:
-    src: ../templates/meta-data.j2
+    src: ../../../../templates/meta-data.j2
     dest: "/tmp/cloud-init-{{ vm_name }}/meta-data"
     mode: '0644'
 
