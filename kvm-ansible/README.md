@@ -2,6 +2,37 @@
 
 Rocky Linux 9 + KVM/libvirt 환경에서 Ubuntu 24.04 VM을 cloud-init 기반으로 자동 생성
 
+## 빠른 명령어 참조
+
+### VM 생성 명령어
+```bash
+# Apache 웹 서버 2번 생성 (172.30.1.42)
+ansible-playbook -i inventory.yml custom-playbooks/VMs/ubuntu/ubuntu-apache02-install.yml
+
+# Apache 웹 서버 3번 생성 (172.30.1.43)
+ansible-playbook -i inventory.yml custom-playbooks/VMs/ubuntu/ubuntu-apache03-install.yml
+
+# Tomcat 서버 1번 생성 (172.30.1.45)
+ansible-playbook -i inventory.yml custom-playbooks/VMs/ubuntu/ubuntu-tomcat01-install.yml
+
+# Tomcat 서버 2번 생성 (172.30.1.46)
+ansible-playbook -i inventory.yml custom-playbooks/VMs/ubuntu/ubuntu-tomcat02-install.yml
+```
+
+### Apache 설치 명령어
+```bash
+# ubuntu-apache02, ubuntu-apache03에 Apache 일괄 설치
+ansible-playbook -i inventory.yml custom-playbooks/apache/apache-install.yml
+```
+
+### 사설 SSL 도메인 인증서 발급 및 설정 명령어
+```bash
+# apache.gtck.kr 도메인에 대한 자체 서명 인증서 생성 및 Apache 설정
+ansible-playbook -i inventory.yml custom-playbooks/ssl/ssl-cert-install.yml
+```
+
+---
+
 ## 사전 설정 (Rocky9 KVM 호스트 root 계정)
 
 ### 1. 저장소 클론 (root로 실행)
