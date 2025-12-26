@@ -1,0 +1,105 @@
+---
+# VM 생성 공통 태스크
+# 상위 플레이북에서 다음 변수 필요:
+# - vm_name, vm_ip, vm_vcpus, vm_memory_mb, vm_disk_gb, vm_description
+
+- name: Check if cloud image exists
+  ansible.builtin.stat:
+    path: "{{ libvirt_pool_dir }}/{{ cloud_image_name }}"
+  register: cloud_image_stat
+
+- name: Download Ubuntu cloud image
+  ansible.builtin.get_url:
+    url: "{{ cloud_image_url }}"
+    dest: "{{ libvirt_pool_dir }}/{{ cloud_image_name }}"
+    mode: '0644'
+  when: not cloud_image_stat.stat.exists
+
+- name: Check if VM already exists
+  ansible.builtin.shell: virsh list --all | grep -w "{{ vm_name }}" || true
+  register: vm_exists
+  changed_when: false
+
+- name: Stop if VM already exists
+  ansible.builtin.fail:
+    msg: "VM {{ vm_name }} already exists!"
+  when: vm_exists.stdout != ""
+
+- name: Create cloud-init config directory
+  ansible.builtin.file:
+    path: "/tmp/cloud-init-{{ vm_name }}"
+    state: directory
+    mode: '0755'
+
+- name: Generate user-data
+  ansible.builtin.template:
+    src: ../templates/user-data.j2
+    dest: "/tmp/cloud-init-{{ vm_name }}/user-data"
+    mode: '0644'
+
+- name: Generate meta-data
+  ansible.builtin.template:
+    src: ../templates/meta-data.j2
+    dest: "/tmp/cloud-init-{{ vm_name }}/meta-data"
+    mode: '0644'
+
+- name: Create cloud-init ISO
+  ansible.builtin.shell: |
+    genisoimage -output {{ libvirt_pool_dir }}/{{ vm_name }}-cidata.iso \
+      -volid cidata \
+      -joliet \
+      -rock \
+      /tmp/cloud-init-{{ vm_name }}/user-data \
+      /tmp/cloud-init-{{ vm_name }}/meta-data
+  args:
+    creates: "{{ libvirt_pool_dir }}/{{ vm_name }}-cidata.iso"
+
+- name: Create VM disk from backing image
+  ansible.builtin.shell: |
+    qemu-img create -f qcow2 \
+      -F qcow2 \
+      -b {{ libvirt_pool_dir }}/{{ cloud_image_name }} \
+      {{ libvirt_pool_dir }}/{{ vm_name }}.qcow2 \
+      {{ vm_disk_gb }}G
+  args:
+    creates: "{{ libvirt_pool_dir }}/{{ vm_name }}.qcow2"
+
+- name: Create VM using virt-install
+  ansible.builtin.shell: |
+    virt-install \
+      --name {{ vm_name }} \
+      --memory {{ vm_memory_mb }} \
+      --vcpus {{ vm_vcpus }} \
+      --disk path={{ libvirt_pool_dir }}/{{ vm_name }}.qcow2,format=qcow2,bus=virtio \
+      --disk path={{ libvirt_pool_dir }}/{{ vm_name }}-cidata.iso,device=cdrom \
+      --network bridge={{ network_name }},model=virtio \
+      --os-variant ubuntu24.04 \
+      --graphics none \
+      --console pty,target_type=serial \
+      --import \
+      --noautoconsole
+
+- name: Wait for VM to be running
+  ansible.builtin.shell: virsh list --state-running | grep -w "{{ vm_name }}"
+  register: vm_running
+  retries: 10
+  delay: 3
+  until: vm_running.rc == 0
+
+- name: Display VM information
+  ansible.builtin.debug:
+    msg: |
+      VM {{ vm_name }} created successfully!
+      IP: {{ vm_ip }}
+      vCPU: {{ vm_vcpus }}
+      Memory: {{ vm_memory_mb }}MB
+      Disk: {{ vm_disk_gb }}GB
+      Description: {{ vm_description }}
+
+      Wait 30-60 seconds for cloud-init to complete, then:
+      ssh {{ vm_default_user }}@{{ vm_ip }}
+
+- name: Cleanup cloud-init temp directory
+  ansible.builtin.file:
+    path: "/tmp/cloud-init-{{ vm_name }}"
+    state: absent

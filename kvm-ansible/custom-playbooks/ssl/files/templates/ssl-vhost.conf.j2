@@ -1,0 +1,25 @@
+<VirtualHost *:{{ ssl_port }}>
+    ServerName {{ ssl_domain }}
+    ServerAdmin admin@{{ ssl_organization }}.kr
+
+    DocumentRoot {{ ssl_document_root }}
+
+    # SSL 설정
+    SSLEngine on
+    SSLCertificateFile /etc/ssl/{{ ssl_domain }}/{{ ssl_domain }}.crt
+    SSLCertificateKeyFile /etc/ssl/{{ ssl_domain }}/{{ ssl_domain }}.key
+
+    # SSL 프로토콜 및 암호화 설정
+    SSLProtocol all -SSLv3 -TLSv1 -TLSv1.1
+    SSLCipherSuite HIGH:!aNULL:!MD5
+
+    <Directory {{ ssl_document_root }}>
+        Options -Indexes +FollowSymLinks
+        AllowOverride All
+        Require all granted
+    </Directory>
+
+    # 로그 설정
+    ErrorLog ${APACHE_LOG_DIR}/{{ ssl_domain }}_ssl_error.log
+    CustomLog ${APACHE_LOG_DIR}/{{ ssl_domain }}_ssl_access.log combined
+</VirtualHost>

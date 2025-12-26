@@ -1,0 +1,28 @@
+---
+# SSL 인증서 설정 변수 파일
+
+# ============================================
+# 설치 대상 호스트 (inventory.yml의 호스트명 사용)
+# ============================================
+ssl_target_hosts:
+  - ubuntu-web01  # 172.30.1.42
+  # - ubuntu-web02  # 172.30.1.43
+
+# SSL 인증서 정보
+ssl_domain: "apache.gtck.kr"
+ssl_country: "KR"
+ssl_state: "Seoul"
+ssl_locality: "Seoul"
+ssl_organization: "gtckorea"
+
+# 인증서 유효기간 (일)
+ssl_validity_days: 365
+
+# SSL 포트
+ssl_port: 443
+
+# VirtualHost 설정 파일명
+ssl_vhost_name: "apache-gtck-kr-ssl"
+
+# DocumentRoot (Apache 설정과 동일하게)
+ssl_document_root: /var/www/html

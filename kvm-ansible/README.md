@@ -81,7 +81,7 @@ python3 -c 'import crypt; print(crypt.crypt("새비밀번호", crypt.mksalt(cryp
 
 ## 빠른 시작 (root 계정)
 
-### 1. VM 생성 (172.30.1.42)
+### 1. VM 한 대씩 생성
 ```bash
 # root로 전환
 su -
@@ -91,27 +91,50 @@ cd /home/gtckorea/workspaces/kvm-ansible
 # VM 스펙 확인/수정
 vi custom-playbooks/VMs/ubuntu/files/values.yml
 
-# VM 생성 실행
-ansible-playbook -i inventory.yml custom-playbooks/VMs/ubuntu/ubuntu-install.yml
+# Apache 웹 서버 1번 생성 (172.30.1.42)
+ansible-playbook -i inventory.yml custom-playbooks/VMs/ubuntu/ubuntu-web01-install.yml
+
+# Apache 웹 서버 2번 생성 (172.30.1.43)
+ansible-playbook -i inventory.yml custom-playbooks/VMs/ubuntu/ubuntu-web02-install.yml
+
+# Tomcat 서버 1번 생성 (172.30.1.45)
+ansible-playbook -i inventory.yml custom-playbooks/VMs/ubuntu/ubuntu-tomcat01-install.yml
+
+# Tomcat 서버 2번 생성 (172.30.1.46)
+ansible-playbook -i inventory.yml custom-playbooks/VMs/ubuntu/ubuntu-tomcat02-install.yml
 ```
 
 ### 2. VM 확인
 ```bash
+# 생성된 VM 목록 확인
 virsh list --all
-ssh gtckorea@172.30.1.42
+
+# SSH 접속 테스트 (각 VM IP로 접속)
+ssh gtckorea@172.30.1.42  # ubuntu-web01
+ssh gtckorea@172.30.1.43  # ubuntu-web02
+ssh gtckorea@172.30.1.45  # ubuntu-tomcat01
+ssh gtckorea@172.30.1.46  # ubuntu-tomcat02
 # 비밀번호: appviewx1
 ```
 
-### 3. Apache 설치 (선택사항)
+### 3. Apache 설치 (web01, web02에 일괄 설치)
 ```bash
+# 설치 대상: custom-playbooks/apache/files/values.yml 참조
 ansible-playbook -i inventory.yml custom-playbooks/apache/apache-install.yml
-# http://172.30.1.42 접속 확인
+
+# 접속 확인
+# http://172.30.1.42
+# http://172.30.1.43
 ```
 
-### 4. Tomcat 설치 (선택사항)
+### 4. Tomcat 설치 (tomcat01, tomcat02에 일괄 설치)
 ```bash
+# 설치 대상: custom-playbooks/tomcat/files/values.yml 참조
 ansible-playbook -i inventory.yml custom-playbooks/tomcat/tomcat-install.yml
-# http://172.30.1.45:8080 접속 확인
+
+# 접속 확인
+# http://172.30.1.45:8080
+# http://172.30.1.46:8080
 ```
 
 ## 주의사항
@@ -197,9 +220,14 @@ kvm-ansible/
 ├── custom-playbooks/                    # 애플리케이션별 플레이북
 │   ├── VMs/
 │   │   └── ubuntu/
-│   │       ├── ubuntu-install.yml       # Ubuntu VM 생성
+│   │       ├── ubuntu-web01-install.yml     # Apache 웹서버 1 생성
+│   │       ├── ubuntu-web02-install.yml     # Apache 웹서버 2 생성
+│   │       ├── ubuntu-tomcat01-install.yml  # Tomcat 서버 1 생성
+│   │       ├── ubuntu-tomcat02-install.yml  # Tomcat 서버 2 생성
+│   │       ├── tasks/
+│   │       │   └── create-vm.yml           # VM 생성 공통 태스크
 │   │       ├── files/
-│   │       │   ├── values.yml          # VM 스펙 정의
+│   │       │   ├── values.yml              # VM 스펙 정의
 │   │       │   └── templates/
 │   │       │       └── user-data-custom.j2
 │   │       └── README.md
@@ -227,19 +255,28 @@ kvm-ansible/
 
 ## 상세 플레이북 사용법 (root 계정)
 
-### VM 생성
+### VM 한 대씩 생성
 ```bash
 cd /home/gtckorea/workspaces/kvm-ansible
-ansible-playbook -i inventory.yml custom-playbooks/VMs/ubuntu/ubuntu-install.yml
+
+# Apache 웹 서버용 VM
+ansible-playbook -i inventory.yml custom-playbooks/VMs/ubuntu/ubuntu-web01-install.yml
+ansible-playbook -i inventory.yml custom-playbooks/VMs/ubuntu/ubuntu-web02-install.yml
+
+# Tomcat 서버용 VM
+ansible-playbook -i inventory.yml custom-playbooks/VMs/ubuntu/ubuntu-tomcat01-install.yml
+ansible-playbook -i inventory.yml custom-playbooks/VMs/ubuntu/ubuntu-tomcat02-install.yml
 ```
 
-### Apache 설치
+### Apache 설치 (일괄)
 ```bash
+# ubuntu-web01, ubuntu-web02에 Apache 설치
 ansible-playbook -i inventory.yml custom-playbooks/apache/apache-install.yml
 ```
 
-### Tomcat 설치
+### Tomcat 설치 (일괄)
 ```bash
+# ubuntu-tomcat01, ubuntu-tomcat02에 Tomcat 설치
 ansible-playbook -i inventory.yml custom-playbooks/tomcat/tomcat-install.yml
 ```
 

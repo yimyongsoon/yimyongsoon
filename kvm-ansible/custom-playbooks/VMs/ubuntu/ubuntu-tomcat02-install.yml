@@ -1,0 +1,22 @@
+---
+# Tomcat Application Server 02 생성
+# root 계정에서 실행: ansible-playbook -i inventory.yml custom-playbooks/VMs/ubuntu/ubuntu-tomcat02-install.yml
+
+- name: Create ubuntu-tomcat02 VM on KVM
+  hosts: localhost
+  gather_facts: false
+
+  vars_files:
+    - ../../../group_vars/all.yml
+
+  vars:
+    vm_name: ubuntu-tomcat02
+    vm_ip: 172.30.1.46
+    vm_vcpus: 2
+    vm_memory_mb: 4096
+    vm_disk_gb: 50
+    vm_description: "Tomcat Application Server 02"
+
+  tasks:
+    - name: Include VM creation tasks
+      ansible.builtin.include_tasks: tasks/create-vm.yml

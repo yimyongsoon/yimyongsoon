@@ -1,0 +1,23 @@
+---
+# Ubuntu VM 생성: ubuntu-web01 (172.30.1.42)
+# root 계정에서 실행: ansible-playbook -i inventory.yml custom-playbooks/VMs/ubuntu/ubuntu-web01-install.yml
+
+- name: Create ubuntu-web01 VM on KVM
+  hosts: localhost
+  gather_facts: true
+  become: true
+
+  vars:
+    vm_name: ubuntu-web01
+    vm_ip: 172.30.1.42
+    vm_vcpus: 2
+    vm_memory_mb: 4096
+    vm_disk_gb: 50
+    vm_description: "Apache Web Server 01"
+
+  vars_files:
+    - ../../../group_vars/all.yml
+
+  tasks:
+    - name: Include VM creation tasks
+      ansible.builtin.include_tasks: tasks/create-vm.yml

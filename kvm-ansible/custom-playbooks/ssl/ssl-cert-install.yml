@@ -1,0 +1,105 @@
+---
+# SSL 인증서 생성 및 Apache 적용 플레이북
+# root 계정에서 실행: ansible-playbook -i inventory.yml custom-playbooks/ssl/ssl-cert-install.yml
+#
+# 설치 대상 호스트: files/values.yml의 ssl_target_hosts 참조
+
+- name: Generate and install SSL certificate for Apache
+  hosts: "{{ ssl_target_hosts | join(',') }}"
+  gather_facts: true
+  become: true
+
+  vars_files:
+    - files/values.yml
+
+  tasks:
+    - name: Install OpenSSL
+      ansible.builtin.apt:
+        name: openssl
+        state: present
+
+    - name: Create SSL directory
+      ansible.builtin.file:
+        path: /etc/ssl/{{ ssl_domain }}
+        state: directory
+        mode: '0755'
+
+    - name: Generate private key
+      ansible.builtin.command:
+        cmd: >
+          openssl genrsa -out /etc/ssl/{{ ssl_domain }}/{{ ssl_domain }}.key 2048
+      args:
+        creates: /etc/ssl/{{ ssl_domain }}/{{ ssl_domain }}.key
+
+    - name: Set private key permissions
+      ansible.builtin.file:
+        path: /etc/ssl/{{ ssl_domain }}/{{ ssl_domain }}.key
+        mode: '0600'
+        owner: root
+        group: root
+
+    - name: Generate certificate signing request (CSR)
+      ansible.builtin.command:
+        cmd: >
+          openssl req -new
+          -key /etc/ssl/{{ ssl_domain }}/{{ ssl_domain }}.key
+          -out /etc/ssl/{{ ssl_domain }}/{{ ssl_domain }}.csr
+          -subj "/C={{ ssl_country }}/ST={{ ssl_state }}/L={{ ssl_locality }}/O={{ ssl_organization }}/CN={{ ssl_domain }}"
+      args:
+        creates: /etc/ssl/{{ ssl_domain }}/{{ ssl_domain }}.csr
+
+    - name: Generate self-signed certificate
+      ansible.builtin.command:
+        cmd: >
+          openssl x509 -req
+          -days {{ ssl_validity_days }}
+          -in /etc/ssl/{{ ssl_domain }}/{{ ssl_domain }}.csr
+          -signkey /etc/ssl/{{ ssl_domain }}/{{ ssl_domain }}.key
+          -out /etc/ssl/{{ ssl_domain }}/{{ ssl_domain }}.crt
+      args:
+        creates: /etc/ssl/{{ ssl_domain }}/{{ ssl_domain }}.crt
+
+    - name: Set certificate permissions
+      ansible.builtin.file:
+        path: /etc/ssl/{{ ssl_domain }}/{{ ssl_domain }}.crt
+        mode: '0644'
+        owner: root
+        group: root
+
+    - name: Enable Apache SSL module
+      ansible.builtin.command:
+        cmd: a2enmod ssl
+      notify: Restart Apache
+
+    - name: Deploy SSL virtual host configuration
+      ansible.builtin.template:
+        src: files/templates/ssl-vhost.conf.j2
+        dest: /etc/apache2/sites-available/{{ ssl_vhost_name }}.conf
+        owner: root
+        group: root
+        mode: '0644'
+      notify: Restart Apache
+
+    - name: Enable SSL virtual host
+      ansible.builtin.command:
+        cmd: a2ensite {{ ssl_vhost_name }}
+      args:
+        creates: /etc/apache2/sites-enabled/{{ ssl_vhost_name }}.conf
+      notify: Restart Apache
+
+    - name: Display SSL certificate information
+      ansible.builtin.debug:
+        msg: |
+          SSL Certificate installed successfully!
+          Domain: {{ ssl_domain }}
+          Certificate: /etc/ssl/{{ ssl_domain }}/{{ ssl_domain }}.crt
+          Private Key: /etc/ssl/{{ ssl_domain }}/{{ ssl_domain }}.key
+          Valid for: {{ ssl_validity_days }} days
+
+          Access: https://{{ ssl_domain }}:{{ ssl_port }}
+
+  handlers:
+    - name: Restart Apache
+      ansible.builtin.systemd:
+        name: apache2
+        state: restarted
