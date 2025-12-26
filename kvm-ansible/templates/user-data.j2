@@ -57,6 +57,8 @@ runcmd:
   - netplan apply
   - systemctl enable qemu-guest-agent
   - systemctl start qemu-guest-agent
+  - ufw disable
+  - systemctl disable ufw
   - echo "{{ vm_name }} cloud-init completed" > /var/log/cloud-init-done.log
 
 # SSH 설정
