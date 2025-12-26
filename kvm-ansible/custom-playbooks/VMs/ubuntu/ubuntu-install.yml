@@ -1,0 +1,60 @@
+---
+# Ubuntu VM 생성 플레이북
+# venv 활성화 후 실행: source venv/bin/activate
+
+- name: Create Ubuntu VMs on KVM
+  hosts: kvm_hosts
+  gather_facts: true
+  become: true
+
+  vars_files:
+    - ../../../group_vars/all.yml
+    - files/values.yml
+
+  tasks:
+    - name: Include base VM creation tasks
+      ansible.builtin.include_tasks: ../../../create_vms.yml
+
+    - name: Wait for VMs to be accessible via SSH
+      ansible.builtin.wait_for:
+        host: "{{ item.ip }}"
+        port: 22
+        delay: 10
+        timeout: 300
+      loop: "{{ vms }}"
+      delegate_to: localhost
+
+    - name: Add VMs to in-memory inventory
+      ansible.builtin.add_host:
+        name: "{{ item.name }}"
+        ansible_host: "{{ item.ip }}"
+        ansible_user: "{{ vm_default_user }}"
+        ansible_password: "{{ vm_default_password }}"
+        ansible_become_password: "{{ vm_default_password }}"
+        groups: created_vms
+      loop: "{{ vms }}"
+
+- name: Post-installation tasks on VMs
+  hosts: created_vms
+  gather_facts: true
+  become: true
+
+  tasks:
+    - name: Update apt cache
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 3600
+
+    - name: Install basic utilities
+      ansible.builtin.apt:
+        name:
+          - vim
+          - curl
+          - wget
+          - htop
+          - net-tools
+        state: present
+
+    - name: Display VM information
+      ansible.builtin.debug:
+        msg: "VM {{ inventory_hostname }} is ready at {{ ansible_host }}"

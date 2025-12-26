@@ -1,0 +1,38 @@
+---
+# Apache 설치 변수 파일
+# 여기서 Apache 버전, 포트, 모듈 등을 관리
+
+# Apache 버전 (최신 버전은 apt에서 자동으로 설치됨)
+apache_version: "latest"  # Ubuntu 24.04 기본 저장소 버전
+
+# 기본 설정
+apache_http_port: 80
+apache_https_port: 443
+apache_document_root: /var/www/html
+apache_vhost_name: "default-vhost"
+
+# VirtualHost 설정
+apache_server_name: "{{ inventory_hostname }}"
+apache_server_admin: "admin@{{ inventory_hostname }}"
+
+# 비활성화 설정
+apache_disable_default_site: true
+apache_configure_firewall: true
+
+# 설치할 추가 모듈 (패키지)
+apache_modules:
+  - libapache2-mod-php
+  - libapache2-mod-security2
+
+# 활성화할 Apache 모듈
+apache_enable_mods:
+  - rewrite
+  - ssl
+  - headers
+  - proxy
+  - proxy_http
+
+# 대상 호스트 그룹 (inventory.yml에 정의)
+# apache_servers:
+#   - ubuntu-web01
+#   - ubuntu-web02

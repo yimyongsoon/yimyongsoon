@@ -6,6 +6,12 @@ __pycache__/
 .vscode/
 .idea/
 
+# Python venv
+venv/
+*.egg-info/
+dist/
+build/
+
 # 민감 정보
 inventory_prod.yml
 secrets.yml

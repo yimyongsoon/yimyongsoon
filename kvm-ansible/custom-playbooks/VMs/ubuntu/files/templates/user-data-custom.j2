@@ -1,0 +1,75 @@
+#cloud-config
+# Custom Ubuntu VM cloud-init template
+# VM: {{ vm.name }} - {{ vm.description | default('No description') }}
+
+hostname: {{ vm.name }}
+fqdn: {{ vm.name }}.local
+
+users:
+  - name: {{ vm_default_user }}
+    groups: sudo
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    shell: /bin/bash
+    lock_passwd: false
+    passwd: $6$rounds=4096$saltsaltsal$8EbLvOQMJ5xZ7Z0Y.v0w3F3vKqWvJ8pXqPZ5Z6ZvZ0Z1Z2Z3Z4Z5Z6Z7Z8Z9Z0
+{% if vm_ssh_authorized_keys | length > 0 %}
+    ssh_authorized_keys:
+{% for key in vm_ssh_authorized_keys %}
+      - {{ key }}
+{% endfor %}
+{% endif %}
+
+timezone: Asia/Seoul
+
+package_update: true
+package_upgrade: false
+
+packages:
+  - qemu-guest-agent
+  - vim
+  - curl
+  - wget
+  - net-tools
+  - htop
+  - git
+
+write_files:
+  - path: /etc/netplan/50-cloud-init.yaml
+    content: |
+      network:
+        version: 2
+        ethernets:
+          enp1s0:
+            dhcp4: false
+            addresses:
+              - {{ vm.ip }}/24
+            routes:
+              - to: default
+                via: {{ network_gateway }}
+            nameservers:
+              addresses:
+                - {{ network_dns }}
+    permissions: '0644'
+
+  - path: /etc/motd
+    content: |
+      ========================================
+      Hostname: {{ vm.name }}
+      IP: {{ vm.ip }}
+      vCPU: {{ vm.vcpus }}
+      Memory: {{ vm.memory_mb }}MB
+      Disk: {{ vm.disk_gb }}GB
+      {{ vm.description | default('') }}
+      ========================================
+    permissions: '0644'
+
+runcmd:
+  - netplan apply
+  - systemctl enable qemu-guest-agent
+  - systemctl start qemu-guest-agent
+  - echo "{{ vm.name }} provisioned at $(date)" > /var/log/cloud-init-done.log
+
+ssh_pwauth: true
+disable_root: false
+
+final_message: "{{ vm.name }} is ready after $UPTIME seconds"

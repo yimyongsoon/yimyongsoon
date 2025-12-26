@@ -2,15 +2,40 @@
 
 Rocky Linux 9 + KVM/libvirt 환경에서 Ubuntu 24.04 VM을 cloud-init 기반으로 자동 생성
 
-## 사전 준비
+## 사전 설정 (필수)
 
-### 1. KVM 호스트에서 실행
+### 0. Python venv 환경 구성
 ```bash
-# Ansible 설치 (Rocky9 호스트에서)
-dnf install -y ansible-core python3-pip
+# KVM 호스트에서 실행
+cd /path/to/kvm-ansible
+
+# Python venv 생성
+python3 -m venv venv
+
+# venv 활성화
+source venv/bin/activate
+
+# Ansible 및 필수 패키지 설치
+pip install --upgrade pip
+pip install ansible ansible-core
 
 # Ansible 컬렉션 설치
 ansible-galaxy collection install -r requirements.yml
+
+# 작업 완료 후 venv 비활성화
+# deactivate
+```
+
+**이후 모든 ansible-playbook 명령은 venv 활성화 후 실행:**
+```bash
+source venv/bin/activate
+ansible-playbook ...
+```
+
+### 1. KVM 호스트 기본 패키지
+```bash
+# Rocky9 시스템 패키지 설치 (root 권한)
+dnf install -y python3 python3-pip libvirt libvirt-client qemu-kvm virt-install
 
 # 브릿지 네트워크 확인
 virsh net-list --all
@@ -137,19 +162,57 @@ rm -f /var/lib/libvirt/images/<VM명>*
 
 ```
 kvm-ansible/
-├── ansible.cfg           # Ansible 설정
-├── inventory.yml         # KVM 호스트 정보
-├── requirements.yml      # Ansible 컬렉션
-├── vms.yml              # VM 스펙 정의 (여기만 수정하면 됨)
+├── ansible.cfg                           # Ansible 설정
+├── inventory.yml                         # KVM 호스트 정보
+├── requirements.yml                      # Ansible 컬렉션
+├── vms.yml                              # VM 스펙 정의 (레거시)
 ├── group_vars/
-│   └── all.yml          # 공통 변수
+│   └── all.yml                          # 공통 변수
 ├── templates/
-│   ├── user-data.j2     # cloud-init 사용자 설정
-│   └── meta-data.j2     # cloud-init 메타데이터
-├── create_vms.yml       # VM 생성 플레이북
-├── delete_vms.yml       # VM 삭제 플레이북
+│   ├── user-data.j2                     # cloud-init 사용자 설정
+│   └── meta-data.j2                     # cloud-init 메타데이터
+├── scripts/
+│   ├── generate_password_hash.sh        # 비밀번호 해시 생성
+│   └── check_network.sh                 # 네트워크 확인
+├── create_vms.yml                       # VM 생성 플레이북 (레거시)
+├── delete_vms.yml                       # VM 삭제 플레이북
+├── custom-playbooks/                    # 애플리케이션별 플레이북
+│   ├── VMs/
+│   │   └── ubuntu/
+│   │       ├── ubuntu-install.yml       # Ubuntu VM 생성
+│   │       ├── files/
+│   │       │   ├── values.yml          # VM 스펙 정의
+│   │       │   └── templates/
+│   │       │       └── user-data-custom.j2
+│   │       └── README.md
+│   └── apache/
+│       ├── apache-install.yml           # Apache 설치
+│       ├── files/
+│       │   ├── values.yml              # Apache 설정
+│       │   └── templates/
+│       │       ├── ports.conf.j2
+│       │       ├── vhost.conf.j2
+│       │       └── index.html.j2
+│       └── README.md
+├── venv/                                # Python 가상환경 (생성 필요)
 └── README.md
 ```
+
+## 주요 플레이북
+
+### VM 생성
+```bash
+source venv/bin/activate
+ansible-playbook -i inventory.yml custom-playbooks/VMs/ubuntu/ubuntu-install.yml
+```
+
+### Apache 설치
+```bash
+source venv/bin/activate
+ansible-playbook -i inventory.yml custom-playbooks/apache/apache-install.yml
+```
+
+상세한 사용법은 각 디렉토리의 README.md 참조
 
 ## 환경
 - 호스트: Rocky Linux 9

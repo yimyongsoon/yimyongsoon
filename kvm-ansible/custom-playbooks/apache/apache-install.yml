@@ -1,0 +1,119 @@
+---
+# Apache 웹서버 설치 플레이북
+# venv 활성화 후 실행: source venv/bin/activate
+# ansible-playbook -i inventory.yml custom-playbooks/apache/apache-install.yml
+
+- name: Install and configure Apache on Ubuntu VMs
+  hosts: apache_servers
+  gather_facts: true
+  become: true
+
+  vars_files:
+    - files/values.yml
+
+  tasks:
+    - name: Update apt cache
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 3600
+
+    - name: Install Apache2
+      ansible.builtin.apt:
+        name:
+          - apache2
+          - apache2-utils
+        state: present
+
+    - name: Install additional modules (from values)
+      ansible.builtin.apt:
+        name: "{{ apache_modules }}"
+        state: present
+      when: apache_modules is defined
+
+    - name: Ensure Apache is started and enabled
+      ansible.builtin.systemd:
+        name: apache2
+        state: started
+        enabled: true
+
+    - name: Configure Apache ports
+      ansible.builtin.template:
+        src: files/templates/ports.conf.j2
+        dest: /etc/apache2/ports.conf
+        owner: root
+        group: root
+        mode: '0644'
+      notify: Restart Apache
+
+    - name: Deploy custom virtual host
+      ansible.builtin.template:
+        src: files/templates/vhost.conf.j2
+        dest: "/etc/apache2/sites-available/{{ apache_vhost_name }}.conf"
+        owner: root
+        group: root
+        mode: '0644'
+      notify: Restart Apache
+
+    - name: Enable custom virtual host
+      ansible.builtin.command:
+        cmd: "a2ensite {{ apache_vhost_name }}"
+      args:
+        creates: "/etc/apache2/sites-enabled/{{ apache_vhost_name }}.conf"
+      notify: Restart Apache
+
+    - name: Disable default site
+      ansible.builtin.command:
+        cmd: a2dissite 000-default
+      args:
+        removes: /etc/apache2/sites-enabled/000-default.conf
+      notify: Restart Apache
+      when: apache_disable_default_site | default(true)
+
+    - name: Enable Apache modules
+      ansible.builtin.command:
+        cmd: "a2enmod {{ item }}"
+      loop: "{{ apache_enable_mods }}"
+      when: apache_enable_mods is defined
+      notify: Restart Apache
+
+    - name: Create document root
+      ansible.builtin.file:
+        path: "{{ apache_document_root }}"
+        state: directory
+        owner: www-data
+        group: www-data
+        mode: '0755'
+
+    - name: Deploy index.html
+      ansible.builtin.template:
+        src: files/templates/index.html.j2
+        dest: "{{ apache_document_root }}/index.html"
+        owner: www-data
+        group: www-data
+        mode: '0644'
+
+    - name: Configure firewall (ufw)
+      community.general.ufw:
+        rule: allow
+        port: "{{ item }}"
+        proto: tcp
+      loop:
+        - "{{ apache_http_port }}"
+        - "{{ apache_https_port | default('443') }}"
+      when: apache_configure_firewall | default(true)
+
+    - name: Verify Apache is listening
+      ansible.builtin.wait_for:
+        port: "{{ apache_http_port }}"
+        delay: 2
+        timeout: 30
+
+    - name: Display Apache status
+      ansible.builtin.debug:
+        msg: "Apache {{ apache_version }} installed on {{ inventory_hostname }} - http://{{ ansible_host }}:{{ apache_http_port }}"
+
+  handlers:
+    - name: Restart Apache
+      ansible.builtin.systemd:
+        name: apache2
+        state: restarted
