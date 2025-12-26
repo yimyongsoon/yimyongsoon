@@ -1,8 +1,8 @@
 #cloud-config
-# VM: {{ vm.name }}
+# VM: {{ vm_name }}
 
-hostname: {{ vm.name }}
-fqdn: {{ vm.name }}.local
+hostname: {{ vm_name }}
+fqdn: {{ vm_name }}.local
 
 users:
   - name: {{ vm_default_user }}
@@ -45,7 +45,7 @@ write_files:
           enp1s0:
             dhcp4: false
             addresses:
-              - {{ vm.ip }}/24
+              - {{ vm_ip }}/24
             routes:
               - to: default
                 via: {{ network_gateway }}
@@ -59,11 +59,11 @@ runcmd:
   - netplan apply
   - systemctl enable qemu-guest-agent
   - systemctl start qemu-guest-agent
-  - echo "{{ vm.name }} cloud-init completed" > /var/log/cloud-init-done.log
+  - echo "{{ vm_name }} cloud-init completed" > /var/log/cloud-init-done.log
 
 # SSH 설정
 ssh_pwauth: true
 disable_root: false
 
 # 최종 메시지
-final_message: "{{ vm.name }} is ready after $UPTIME seconds"
+final_message: "{{ vm_name }} is ready after $UPTIME seconds"
