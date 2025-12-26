@@ -92,10 +92,10 @@ cd /home/gtckorea/workspaces/kvm-ansible
 vi custom-playbooks/VMs/ubuntu/files/values.yml
 
 # Apache 웹 서버 2번 생성 (172.30.1.42)
-ansible-playbook -i inventory.yml custom-playbooks/VMs/ubuntu/ubuntu-web01-install.yml
+ansible-playbook -i inventory.yml custom-playbooks/VMs/ubuntu/ubuntu-apache02-install.yml
 
 # Apache 웹 서버 3번 생성 (172.30.1.43)
-ansible-playbook -i inventory.yml custom-playbooks/VMs/ubuntu/ubuntu-web02-install.yml
+ansible-playbook -i inventory.yml custom-playbooks/VMs/ubuntu/ubuntu-apache03-install.yml
 
 # Tomcat 서버 1번 생성 (172.30.1.45)
 ansible-playbook -i inventory.yml custom-playbooks/VMs/ubuntu/ubuntu-tomcat01-install.yml
@@ -110,14 +110,14 @@ ansible-playbook -i inventory.yml custom-playbooks/VMs/ubuntu/ubuntu-tomcat02-in
 virsh list --all
 
 # SSH 접속 테스트 (각 VM IP로 접속)
-ssh gtckorea@172.30.1.42  # ubuntu-web01
-ssh gtckorea@172.30.1.43  # ubuntu-web02
+ssh gtckorea@172.30.1.42  # ubuntu-apache02
+ssh gtckorea@172.30.1.43  # ubuntu-apache03
 ssh gtckorea@172.30.1.45  # ubuntu-tomcat01
 ssh gtckorea@172.30.1.46  # ubuntu-tomcat02
 # 비밀번호: appviewx1
 ```
 
-### 3. Apache 설치 (web01, web02에 일괄 설치)
+### 3. Apache 설치 (apache02, apache03에 일괄 설치)
 ```bash
 # 설치 대상: custom-playbooks/apache/files/values.yml 참조
 ansible-playbook -i inventory.yml custom-playbooks/apache/apache-install.yml
@@ -220,8 +220,8 @@ kvm-ansible/
 ├── custom-playbooks/                    # 애플리케이션별 플레이북
 │   ├── VMs/
 │   │   └── ubuntu/
-│   │       ├── ubuntu-web01-install.yml     # Apache 웹서버 1 생성
-│   │       ├── ubuntu-web02-install.yml     # Apache 웹서버 2 생성
+│   │       ├── ubuntu-apache02-install.yml  # Apache 웹서버 2 생성
+│   │       ├── ubuntu-apache03-install.yml  # Apache 웹서버 3 생성
 │   │       ├── ubuntu-tomcat01-install.yml  # Tomcat 서버 1 생성
 │   │       ├── ubuntu-tomcat02-install.yml  # Tomcat 서버 2 생성
 │   │       ├── tasks/
@@ -260,8 +260,8 @@ kvm-ansible/
 cd /home/gtckorea/workspaces/kvm-ansible
 
 # Apache 웹 서버용 VM
-ansible-playbook -i inventory.yml custom-playbooks/VMs/ubuntu/ubuntu-web01-install.yml
-ansible-playbook -i inventory.yml custom-playbooks/VMs/ubuntu/ubuntu-web02-install.yml
+ansible-playbook -i inventory.yml custom-playbooks/VMs/ubuntu/ubuntu-apache02-install.yml
+ansible-playbook -i inventory.yml custom-playbooks/VMs/ubuntu/ubuntu-apache03-install.yml
 
 # Tomcat 서버용 VM
 ansible-playbook -i inventory.yml custom-playbooks/VMs/ubuntu/ubuntu-tomcat01-install.yml
@@ -270,7 +270,7 @@ ansible-playbook -i inventory.yml custom-playbooks/VMs/ubuntu/ubuntu-tomcat02-in
 
 ### Apache 설치 (일괄)
 ```bash
-# ubuntu-web01, ubuntu-web02에 Apache 설치
+# ubuntu-apache02, ubuntu-apache03에 Apache 설치
 ansible-playbook -i inventory.yml custom-playbooks/apache/apache-install.yml
 ```
 
