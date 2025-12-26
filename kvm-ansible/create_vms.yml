@@ -1,0 +1,129 @@
+---
+- name: Create Ubuntu VMs on KVM using cloud-init
+  hosts: kvm_hosts
+  gather_facts: true
+  become: true
+
+  vars_files:
+    - group_vars/all.yml
+    - vms.yml
+
+  tasks:
+    - name: Install required packages on KVM host
+      ansible.builtin.dnf:
+        name:
+          - libvirt
+          - libvirt-client
+          - virt-install
+          - qemu-kvm
+          - qemu-img
+          - libguestfs-tools
+          - python3-libvirt
+          - python3-lxml
+          - genisoimage
+        state: present
+
+    - name: Ensure libvirtd is running
+      ansible.builtin.systemd:
+        name: libvirtd
+        state: started
+        enabled: true
+
+    - name: Check if cloud image exists
+      ansible.builtin.stat:
+        path: "{{ backing_image_path }}"
+      register: cloud_image_stat
+
+    - name: Download Ubuntu 24.04 cloud image
+      ansible.builtin.get_url:
+        url: "{{ cloud_image_url }}"
+        dest: "{{ backing_image_path }}"
+        mode: '0644'
+      when: not cloud_image_stat.stat.exists
+
+    - name: Create cloud-init config directory
+      ansible.builtin.file:
+        path: "/tmp/cloud-init-{{ item.name }}"
+        state: directory
+        mode: '0755'
+      loop: "{{ vms }}"
+
+    - name: Generate user-data for each VM
+      ansible.builtin.template:
+        src: templates/user-data.j2
+        dest: "/tmp/cloud-init-{{ item.name }}/user-data"
+        mode: '0644'
+      vars:
+        vm: "{{ item }}"
+      loop: "{{ vms }}"
+
+    - name: Generate meta-data for each VM
+      ansible.builtin.template:
+        src: templates/meta-data.j2
+        dest: "/tmp/cloud-init-{{ item.name }}/meta-data"
+        mode: '0644'
+      vars:
+        vm: "{{ item }}"
+      loop: "{{ vms }}"
+
+    - name: Create cloud-init ISO for each VM
+      ansible.builtin.shell: |
+        genisoimage -output {{ libvirt_pool_dir }}/{{ item.name }}-cidata.iso \
+          -volid cidata \
+          -joliet \
+          -rock \
+          /tmp/cloud-init-{{ item.name }}/user-data \
+          /tmp/cloud-init-{{ item.name }}/meta-data
+      args:
+        creates: "{{ libvirt_pool_dir }}/{{ item.name }}-cidata.iso"
+      loop: "{{ vms }}"
+
+    - name: Create VM disk from backing image
+      ansible.builtin.shell: |
+        qemu-img create -f qcow2 \
+          -F qcow2 \
+          -b {{ backing_image_path }} \
+          {{ libvirt_pool_dir }}/{{ item.name }}.qcow2 \
+          {{ item.disk_gb }}G
+      args:
+        creates: "{{ libvirt_pool_dir }}/{{ item.name }}.qcow2"
+      loop: "{{ vms }}"
+
+    - name: Check if VM already exists
+      community.libvirt.virt:
+        command: list_vms
+      register: existing_vms_list
+
+    - name: Create VM using virt-install
+      ansible.builtin.shell: |
+        virt-install \
+          --name {{ item.name }} \
+          --memory {{ item.memory_mb }} \
+          --vcpus {{ item.vcpus }} \
+          --disk path={{ libvirt_pool_dir }}/{{ item.name }}.qcow2,format=qcow2,bus=virtio \
+          --disk path={{ libvirt_pool_dir }}/{{ item.name }}-cidata.iso,device=cdrom \
+          --network bridge=br0,model=virtio \
+          --os-variant ubuntu24.04 \
+          --graphics none \
+          --console pty,target_type=serial \
+          --import \
+          --noautoconsole
+      when: item.name not in existing_vms_list.list_vms
+      loop: "{{ vms }}"
+
+    - name: Wait for VMs to be running
+      community.libvirt.virt:
+        name: "{{ item.name }}"
+        state: running
+      loop: "{{ vms }}"
+
+    - name: Display VM info
+      ansible.builtin.debug:
+        msg: "VM {{ item.name }} created with IP {{ item.ip }}"
+      loop: "{{ vms }}"
+
+    - name: Cleanup cloud-init temp directories
+      ansible.builtin.file:
+        path: "/tmp/cloud-init-{{ item.name }}"
+        state: absent
+      loop: "{{ vms }}"

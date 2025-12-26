@@ -1,0 +1,25 @@
+---
+# 공통 변수
+libvirt_pool_dir: /var/lib/libvirt/images
+cloud_image_url: https://cloud-images.ubuntu.com/releases/24.04/release/ubuntu-24.04-server-cloudimg-amd64.img
+cloud_image_name: ubuntu-24.04-cloudimg-amd64.img
+backing_image_path: "{{ libvirt_pool_dir }}/{{ cloud_image_name }}"
+
+# 네트워크 설정
+network_name: br0  # 실제 브릿지 네트워크 이름 (libvirt 네트워크명)
+network_subnet: 172.30.1.0
+network_netmask: 255.255.255.0
+network_gateway: 172.30.1.254
+network_dns: 168.126.63.1
+
+# VM 기본 사용자
+vm_default_user: gtckorea
+vm_default_password: appviewx1  # cloud-init에서 해시로 변환 필요
+
+# SSH 키 (선택사항, 있으면 설정)
+vm_ssh_authorized_keys: []
+# - ssh-rsa AAAA...
+
+# 기존 VM (제외용)
+existing_vms:
+  - ubuntu_apache

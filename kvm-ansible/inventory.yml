@@ -1,0 +1,10 @@
+---
+# KVM 호스트 인벤토리
+all:
+  children:
+    kvm_hosts:
+      hosts:
+        kvm-host:
+          ansible_host: <KVM_호스트_IP>  # 실제 Rocky9 서버 IP로 변경
+          ansible_user: root  # 또는 sudo 가능한 사용자
+          ansible_python_interpreter: /usr/bin/python3

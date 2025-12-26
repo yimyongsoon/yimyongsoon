@@ -1,0 +1,11 @@
+*.retry
+*.pyc
+__pycache__/
+.ansible/
+*.log
+.vscode/
+.idea/
+
+# 민감 정보
+inventory_prod.yml
+secrets.yml

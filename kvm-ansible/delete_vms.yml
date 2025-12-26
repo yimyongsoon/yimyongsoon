@@ -1,0 +1,41 @@
+---
+- name: Delete Ubuntu VMs from KVM
+  hosts: kvm_hosts
+  gather_facts: false
+  become: true
+
+  vars_files:
+    - group_vars/all.yml
+    - vms.yml
+
+  tasks:
+    - name: Stop VMs
+      community.libvirt.virt:
+        name: "{{ item.name }}"
+        state: destroyed
+      loop: "{{ vms }}"
+      ignore_errors: true
+
+    - name: Undefine VMs
+      community.libvirt.virt:
+        name: "{{ item.name }}"
+        command: undefine
+      loop: "{{ vms }}"
+      ignore_errors: true
+
+    - name: Remove VM disk files
+      ansible.builtin.file:
+        path: "{{ libvirt_pool_dir }}/{{ item.name }}.qcow2"
+        state: absent
+      loop: "{{ vms }}"
+
+    - name: Remove cloud-init ISO files
+      ansible.builtin.file:
+        path: "{{ libvirt_pool_dir }}/{{ item.name }}-cidata.iso"
+        state: absent
+      loop: "{{ vms }}"
+
+    - name: Display deletion status
+      ansible.builtin.debug:
+        msg: "VM {{ item.name }} deleted"
+      loop: "{{ vms }}"

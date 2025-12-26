@@ -1,0 +1,69 @@
+#cloud-config
+# VM: {{ vm.name }}
+
+hostname: {{ vm.name }}
+fqdn: {{ vm.name }}.local
+
+users:
+  - name: {{ vm_default_user }}
+    groups: sudo
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    shell: /bin/bash
+    lock_passwd: false
+    # 비밀번호: {{ vm_default_password }}
+    # 아래 해시는 'appviewx1'의 SHA-512 해시
+    passwd: $6$rounds=4096$saltsaltsal$8EbLvOQMJ5xZ7Z0Y.v0w3F3vKqWvJ8pXqPZ5Z6ZvZ0Z1Z2Z3Z4Z5Z6Z7Z8Z9Z0
+{% if vm_ssh_authorized_keys | length > 0 %}
+    ssh_authorized_keys:
+{% for key in vm_ssh_authorized_keys %}
+      - {{ key }}
+{% endfor %}
+{% endif %}
+
+# 타임존 설정
+timezone: Asia/Seoul
+
+# 패키지 업데이트
+package_update: true
+package_upgrade: false
+
+# 기본 패키지 설치
+packages:
+  - qemu-guest-agent
+  - vim
+  - curl
+  - wget
+  - net-tools
+
+# 네트워크 설정 (Netplan)
+write_files:
+  - path: /etc/netplan/50-cloud-init.yaml
+    content: |
+      network:
+        version: 2
+        ethernets:
+          enp1s0:
+            dhcp4: false
+            addresses:
+              - {{ vm.ip }}/24
+            routes:
+              - to: default
+                via: {{ network_gateway }}
+            nameservers:
+              addresses:
+                - {{ network_dns }}
+    permissions: '0644'
+
+# cloud-init 완료 후 실행
+runcmd:
+  - netplan apply
+  - systemctl enable qemu-guest-agent
+  - systemctl start qemu-guest-agent
+  - echo "{{ vm.name }} cloud-init completed" > /var/log/cloud-init-done.log
+
+# SSH 설정
+ssh_pwauth: true
+disable_root: false
+
+# 최종 메시지
+final_message: "{{ vm.name }} is ready after $UPTIME seconds"

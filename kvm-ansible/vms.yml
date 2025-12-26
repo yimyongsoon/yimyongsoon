@@ -1,0 +1,39 @@
+---
+# VM 정의 (values 파일)
+vms:
+  - name: ubuntu-web01
+    ip: 172.30.1.42
+    vcpus: 2
+    memory_mb: 4096
+    disk_gb: 50
+
+  - name: ubuntu-web02
+    ip: 172.30.1.43
+    vcpus: 2
+    memory_mb: 4096
+    disk_gb: 50
+
+  - name: ubuntu-db01
+    ip: 172.30.1.44
+    vcpus: 4
+    memory_mb: 8192
+    disk_gb: 100
+
+  - name: ubuntu-app01
+    ip: 172.30.1.45
+    vcpus: 2
+    memory_mb: 4096
+    disk_gb: 50
+
+  - name: ubuntu-app02
+    ip: 172.30.1.46
+    vcpus: 2
+    memory_mb: 4096
+    disk_gb: 50
+
+# 추가 VM은 아래에 계속 추가
+# - name: ubuntu-mgmt
+#   ip: 172.30.1.47
+#   vcpus: 2
+#   memory_mb: 2048
+#   disk_gb: 30
