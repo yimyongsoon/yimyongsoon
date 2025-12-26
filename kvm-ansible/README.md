@@ -153,12 +153,31 @@ ssh gtckorea@172.30.1.46  # ubuntu-tomcat02
 # 설치 대상: custom-playbooks/apache/files/values.yml 참조
 ansible-playbook -i inventory.yml custom-playbooks/apache/apache-install.yml
 
-# 접속 확인
-# http://172.30.1.42
-# http://172.30.1.43
+# 웹 서비스 테스트 (HTTP)
+curl http://172.30.1.42
+curl http://172.30.1.43
+
+# 또는 도메인으로 테스트 (Host 헤더 사용)
+curl -H "Host: apache.gtck.kr" http://172.30.1.42
 ```
 
-### 4. Tomcat 설치 (tomcat01, tomcat02에 일괄 설치)
+### 4. SSL 인증서 발급 및 적용
+```bash
+# 자체 서명 SSL 인증서 생성 및 Apache 설정
+ansible-playbook -i inventory.yml custom-playbooks/ssl/ssl-cert-install.yml
+
+# HTTPS 웹 접근 테스트 (자체 서명 인증서이므로 -k 옵션 필요)
+curl -k https://172.30.1.42
+curl -k https://172.30.1.43
+
+# 또는 도메인으로 HTTPS 테스트
+curl -k --resolve apache.gtck.kr:443:172.30.1.42 https://apache.gtck.kr
+
+# 인증서 정보 확인
+curl -vk https://172.30.1.42 2>&1 | grep -A 5 "Server certificate"
+```
+
+### 5. Tomcat 설치 (tomcat01, tomcat02에 일괄 설치)
 ```bash
 # 설치 대상: custom-playbooks/tomcat/files/values.yml 참조
 ansible-playbook -i inventory.yml custom-playbooks/tomcat/tomcat-install.yml
