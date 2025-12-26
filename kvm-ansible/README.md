@@ -2,27 +2,38 @@
 
 Rocky Linux 9 + KVM/libvirt 환경에서 Ubuntu 24.04 VM을 cloud-init 기반으로 자동 생성
 
-## 사전 설정 (Rocky9 KVM 호스트에서 실행)
+## 사전 설정 (Rocky9 KVM 호스트 root 계정)
 
-### 1. 저장소 클론
+### 1. 저장소 클론 (root로 실행)
 ```bash
-cd ~
+# root로 전환
+su -
+
+# 저장소 클론
+cd /home/gtckorea
 git clone https://github.com/yimyongsoon/yimyongsoon.git
 mv yimyongsoon workspaces
+
+# 소유권 변경 (root로 통일)
+chown -R root:root /home/gtckorea/workspaces
+
+# git safe directory 설정
+git config --global --add safe.directory /home/gtckorea/workspaces
+
 cd workspaces/kvm-ansible
 ```
 
 ### 2. 시스템 패키지 설치 (libvirt가 없는 경우만)
 ```bash
 # Ansible 설치 (없는 경우만)
-sudo dnf install -y epel-release
-sudo dnf install -y ansible-core
+dnf install -y epel-release
+dnf install -y ansible-core
 
 # KVM/libvirt가 없는 경우만 설치
-sudo dnf install -y python3-libvirt python3-lxml
-sudo dnf install -y libvirt libvirt-client qemu-kvm virt-install qemu-img
-sudo dnf install -y libguestfs-tools genisoimage
-sudo systemctl enable --now libvirtd
+dnf install -y python3-libvirt python3-lxml
+dnf install -y libvirt libvirt-client qemu-kvm virt-install qemu-img
+dnf install -y libguestfs-tools genisoimage
+systemctl enable --now libvirtd
 ```
 
 ### 3. Ansible 컬렉션 설치
@@ -33,7 +44,7 @@ ansible-galaxy collection install -r requirements.yml
 ### 4. 네트워크 확인
 ```bash
 # 기존 VM의 네트워크 확인
-sudo virsh domiflist <기존VM명>
+virsh domiflist <기존VM명>
 
 # br0 브릿지 사용 확인 (Type: bridge, Source: br0)
 # 다르면 group_vars/all.yml의 network_name 수정
@@ -68,35 +79,38 @@ python3 -c 'import crypt; print(crypt.crypt("새비밀번호", crypt.mksalt(cryp
 
 출력된 해시를 `templates/user-data.j2`의 `passwd:` 필드에 복사
 
-## 빠른 시작
+## 빠른 시작 (root 계정)
 
 ### 1. VM 생성 (172.30.1.42)
 ```bash
-cd ~/workspaces/kvm-ansible
+# root로 전환
+su -
+
+cd /home/gtckorea/workspaces/kvm-ansible
 
 # VM 스펙 확인/수정
 vi custom-playbooks/VMs/ubuntu/files/values.yml
 
-# VM 생성 실행 (sudo 필수)
-sudo ansible-playbook -i inventory.yml custom-playbooks/VMs/ubuntu/ubuntu-install.yml
+# VM 생성 실행
+ansible-playbook -i inventory.yml custom-playbooks/VMs/ubuntu/ubuntu-install.yml
 ```
 
 ### 2. VM 확인
 ```bash
-sudo virsh list --all
+virsh list --all
 ssh gtckorea@172.30.1.42
 # 비밀번호: appviewx1
 ```
 
 ### 3. Apache 설치 (선택사항)
 ```bash
-sudo ansible-playbook -i inventory.yml custom-playbooks/apache/apache-install.yml
+ansible-playbook -i inventory.yml custom-playbooks/apache/apache-install.yml
 # http://172.30.1.42 접속 확인
 ```
 
 ### 4. Tomcat 설치 (선택사항)
 ```bash
-sudo ansible-playbook -i inventory.yml custom-playbooks/tomcat/tomcat-install.yml
+ansible-playbook -i inventory.yml custom-playbooks/tomcat/tomcat-install.yml
 # http://172.30.1.45:8080 접속 확인
 ```
 
@@ -211,27 +225,27 @@ kvm-ansible/
 └── README.md
 ```
 
-## 상세 플레이북 사용법
+## 상세 플레이북 사용법 (root 계정)
 
 ### VM 생성
 ```bash
-cd ~/workspaces/kvm-ansible
-sudo ansible-playbook -i inventory.yml custom-playbooks/VMs/ubuntu/ubuntu-install.yml
+cd /home/gtckorea/workspaces/kvm-ansible
+ansible-playbook -i inventory.yml custom-playbooks/VMs/ubuntu/ubuntu-install.yml
 ```
 
 ### Apache 설치
 ```bash
-sudo ansible-playbook -i inventory.yml custom-playbooks/apache/apache-install.yml
+ansible-playbook -i inventory.yml custom-playbooks/apache/apache-install.yml
 ```
 
 ### Tomcat 설치
 ```bash
-sudo ansible-playbook -i inventory.yml custom-playbooks/tomcat/tomcat-install.yml
+ansible-playbook -i inventory.yml custom-playbooks/tomcat/tomcat-install.yml
 ```
 
 ### VM 삭제
 ```bash
-sudo ansible-playbook -i inventory.yml delete_vms.yml
+ansible-playbook -i inventory.yml delete_vms.yml
 ```
 
 상세한 사용법은 각 디렉토리의 README.md 참조
