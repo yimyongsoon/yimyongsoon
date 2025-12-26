@@ -4,29 +4,42 @@ Rocky Linux 9 + KVM/libvirt 환경에서 Ubuntu 24.04 VM을 cloud-init 기반으
 
 ## 사전 설정 (Rocky9 KVM 호스트에서 실행)
 
-### 1. 시스템 패키지 설치
+### 1. 저장소 클론
 ```bash
-# Ansible 및 KVM 관련 패키지 설치 (root 권한)
-dnf install -y epel-release
-dnf install -y ansible-core python3-pip python3-libvirt python3-lxml
-dnf install -y libvirt libvirt-client qemu-kvm virt-install qemu-img
-dnf install -y libguestfs-tools genisoimage
-
-# libvirtd 시작 및 활성화
-systemctl enable --now libvirtd
-
-# 브릿지 네트워크 확인
-virsh net-list --all
-# br0 네트워크가 있어야 함 (172.30.1.0/24)
+cd ~
+git clone https://github.com/yimyongsoon/yimyongsoon.git
+mv yimyongsoon workspaces
+cd workspaces/kvm-ansible
 ```
 
-### 2. Ansible 컬렉션 설치
+### 2. 시스템 패키지 설치 (libvirt가 없는 경우만)
 ```bash
-cd /path/to/kvm-ansible
+# Ansible 설치 (없는 경우만)
+sudo dnf install -y epel-release
+sudo dnf install -y ansible-core
+
+# KVM/libvirt가 없는 경우만 설치
+sudo dnf install -y python3-libvirt python3-lxml
+sudo dnf install -y libvirt libvirt-client qemu-kvm virt-install qemu-img
+sudo dnf install -y libguestfs-tools genisoimage
+sudo systemctl enable --now libvirtd
+```
+
+### 3. Ansible 컬렉션 설치
+```bash
 ansible-galaxy collection install -r requirements.yml
 ```
 
-### 3. 설정 파일 수정
+### 4. 네트워크 확인
+```bash
+# 기존 VM의 네트워크 확인
+sudo virsh domiflist <기존VM명>
+
+# br0 브릿지 사용 확인 (Type: bridge, Source: br0)
+# 다르면 group_vars/all.yml의 network_name 수정
+```
+
+### 5. 설정 파일 수정
 
 #### inventory.yml
 Rocky9에서 localhost로 실행하므로 수정 불필요 (기본값 사용)
@@ -55,30 +68,36 @@ python3 -c 'import crypt; print(crypt.crypt("새비밀번호", crypt.mksalt(cryp
 
 출력된 해시를 `templates/user-data.j2`의 `passwd:` 필드에 복사
 
-## 사용법
+## 빠른 시작
 
-### VM 생성
+### 1. VM 생성 (172.30.1.42)
 ```bash
-ansible-playbook -i inventory.yml create_vms.yml
+cd ~/workspaces/kvm-ansible
+
+# VM 스펙 확인/수정
+vi custom-playbooks/VMs/ubuntu/files/values.yml
+
+# VM 생성 실행 (sudo 필수)
+sudo ansible-playbook -i inventory.yml custom-playbooks/VMs/ubuntu/ubuntu-install.yml
 ```
 
-### VM 삭제
+### 2. VM 확인
 ```bash
-ansible-playbook -i inventory.yml delete_vms.yml
-```
-
-### 특정 VM만 생성
-```bash
-ansible-playbook -i inventory.yml create_vms.yml --extra-vars '{"vms": [{"name": "ubuntu-web01", "ip": "172.30.1.42", "vcpus": 2, "memory_mb": 4096, "disk_gb": 50}]}'
-```
-
-## VM 접속
-
-```bash
-# SSH 접속
+sudo virsh list --all
 ssh gtckorea@172.30.1.42
+# 비밀번호: appviewx1
+```
 
-# 비밀번호: group_vars/all.yml 참조
+### 3. Apache 설치 (선택사항)
+```bash
+sudo ansible-playbook -i inventory.yml custom-playbooks/apache/apache-install.yml
+# http://172.30.1.42 접속 확인
+```
+
+### 4. Tomcat 설치 (선택사항)
+```bash
+sudo ansible-playbook -i inventory.yml custom-playbooks/tomcat/tomcat-install.yml
+# http://172.30.1.45:8080 접속 확인
 ```
 
 ## 주의사항
@@ -192,22 +211,27 @@ kvm-ansible/
 └── README.md
 ```
 
-## 주요 플레이북 사용법
+## 상세 플레이북 사용법
 
 ### VM 생성
 ```bash
-cd /path/to/kvm-ansible
-ansible-playbook -i inventory.yml custom-playbooks/VMs/ubuntu/ubuntu-install.yml
+cd ~/workspaces/kvm-ansible
+sudo ansible-playbook -i inventory.yml custom-playbooks/VMs/ubuntu/ubuntu-install.yml
 ```
 
 ### Apache 설치
 ```bash
-ansible-playbook -i inventory.yml custom-playbooks/apache/apache-install.yml
+sudo ansible-playbook -i inventory.yml custom-playbooks/apache/apache-install.yml
 ```
 
 ### Tomcat 설치
 ```bash
-ansible-playbook -i inventory.yml custom-playbooks/tomcat/tomcat-install.yml
+sudo ansible-playbook -i inventory.yml custom-playbooks/tomcat/tomcat-install.yml
+```
+
+### VM 삭제
+```bash
+sudo ansible-playbook -i inventory.yml delete_vms.yml
 ```
 
 상세한 사용법은 각 디렉토리의 README.md 참조
