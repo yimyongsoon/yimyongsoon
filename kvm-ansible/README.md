@@ -35,7 +35,7 @@ kvm-host:
 
 ### 3. 비밀번호 해시 생성 (선택사항)
 
-기본 비밀번호는 `appviewx1`로 설정되어 있습니다.
+기본 비밀번호는 `group_vars/all.yml`에 설정되어 있습니다.
 변경하려면:
 
 ```bash
@@ -68,7 +68,7 @@ ansible-playbook -i inventory.yml create_vms.yml --extra-vars '{"vms": [{"name":
 # SSH 접속
 ssh gtckorea@172.30.1.42
 
-# 비밀번호: appviewx1
+# 비밀번호: group_vars/all.yml 참조
 ```
 
 ## 주의사항
@@ -156,4 +156,4 @@ kvm-ansible/
 - 하이퍼바이저: KVM/libvirt
 - VM OS: Ubuntu Server 24.04
 - 네트워크: 172.30.1.0/24 (br0)
-- 사용자: gtckorea / appviewx1
+- 사용자: gtckorea / ******* (group_vars/all.yml 참조)
