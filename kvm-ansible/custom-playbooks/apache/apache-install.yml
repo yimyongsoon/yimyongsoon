@@ -1,10 +1,11 @@
 ---
 # Apache 웹서버 설치 플레이북
-# venv 활성화 후 실행: source venv/bin/activate
-# ansible-playbook -i inventory.yml custom-playbooks/apache/apache-install.yml
+# root 계정에서 실행: ansible-playbook -i inventory.yml custom-playbooks/apache/apache-install.yml
+#
+# 설치 대상 호스트: files/values.yml의 apache_target_hosts 참조
 
 - name: Install and configure Apache on Ubuntu VMs
-  hosts: apache_servers
+  hosts: "{{ apache_target_hosts | join(',') }}"
   gather_facts: true
   become: true
 
